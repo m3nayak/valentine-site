@@ -323,28 +323,38 @@ updateAttemptsUI();
 
   function rand(a,b){ return a + Math.random() * (b-a); }
 
-  const COUNT = 52;         // subtle density
-  const WIND = 0.22;        // gentle sideways drift
-  const hearts = Array.from({length: COUNT}).map(() => ({
-    x: rand(0, W),
-    y: rand(0, H),
-    s: rand(0.7, 1.6),      // size scale
-    v: rand(0.35, 1.10),    // fall speed
-    r: rand(-Math.PI, Math.PI),
-    vr: rand(-0.006, 0.006),
-    wob: rand(0.6, 1.6),
-    wobPhase: rand(0, 1000),
-    a: rand(0.16, 0.32)     // low alpha = luxe
-  }));
+  const COUNT = 75;         // subtle density
+  const WIND = 0.30;        // gentle sideways drift
+const COLORS = [
+  "rgba(255, 105, 180, 0.55)", // hot pink
+  "rgba(255, 182, 193, 0.55)", // light pink
+  "rgba(255, 20, 147, 0.50)",  // deep pink
+  "rgba(255, 99, 132, 0.50)",  // soft red-pink
+  "rgba(220, 20, 60, 0.45)"    // crimson (subtle)
+];
 
-  function drawHeart(x,y,scale,rot,alpha){
+const hearts = Array.from({length: COUNT}).map(() => ({
+  x: rand(0, W),
+  y: rand(0, H),
+  s: rand(0.7, 1.6),
+  v: rand(0.35, 1.10),
+  r: rand(-Math.PI, Math.PI),
+  vr: rand(-0.006, 0.006),
+  wob: rand(0.6, 1.6),
+  wobPhase: rand(0, 1000),
+  a: rand(0.16, 0.32),
+  color: COLORS[Math.floor(Math.random() * COLORS.length)]
+}));
+
+
+  function drawHeart(x,y,scale,rot,alpha,color){
     ctx.save();
     ctx.translate(x,y);
     ctx.rotate(rot);
     ctx.globalAlpha = alpha;
 
     // Pink base + soft red overlay (same vibe you liked)
-    ctx.fillStyle = "rgba(255, 105, 180, 0.55)";
+    ctx.fillStyle = color;
     ctx.beginPath();
     const s = 10 * scale;
     ctx.moveTo(0, -s/2);
@@ -381,7 +391,7 @@ updateAttemptsUI();
         h.a = rand(0.16, 0.32);
       }
 
-      drawHeart(h.x, h.y, h.s, h.r, h.a);
+      drawHeart(h.x, h.y, h.s, h.r, h.a, h.color);
     }
 
     requestAnimationFrame(tick);
@@ -389,5 +399,3 @@ updateAttemptsUI();
 
   tick();
 })();
-
-
