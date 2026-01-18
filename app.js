@@ -303,7 +303,7 @@ envelope.classList.remove("open");
 setUnlocked(false);
 updateAttemptsUI();
 
-(function softLuxeHeartsAndKisses(){
+(function softLuxeHeartsOnly(){
   const canvas = document.getElementById("heartsCanvas");
   if(!canvas) return;
   const ctx = canvas.getContext("2d");
@@ -322,150 +322,80 @@ updateAttemptsUI();
   resize();
 
   function rand(a,b){ return a + Math.random() * (b-a); }
-  function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
 
-  // --- Tune these ---
-  const HEART_COUNT = 75;
-  const KISS_COUNT  = 10;     // less often than hearts
-  const WIND = 0.30;
+  const COUNT = 75;         // subtle density
+  const WIND = 0.30;        // gentle sideways drift
+  const COLORS = [
+  "rgba(255, 230, 240, 0.85)", // blush highlight
+  "rgba(255, 170, 210, 0.88)", // pastel pink
+  "rgba(255, 105, 180, 0.92)", // hot pink
+  "rgba(255, 20, 147, 0.92)",  // deep pink
+  "rgba(255, 45, 85, 0.92)",   // punchy rose-red
+  "rgba(220, 20, 60, 0.92)"    // crimson
+];
+  
+  const hearts = Array.from({length: COUNT}).map(() => ({
+    x: rand(0, W),
+    y: rand(0, H),
+    s: rand(0.7, 1.6),
+    v: rand(0.35, 1.10),
+    vx: rand(-0.30, 0.30),       // NEW: balanced left/right
+    r: rand(-Math.PI, Math.PI),
+    vr: rand(-0.006, 0.006),
+    wob: rand(0.6, 1.6),
+    wobPhase: rand(0, 1000),
+    a: rand(0.16, 0.32),
+    color: COLORS[Math.floor(Math.random() * COLORS.length)]
+  }));
 
-  const HEART_COLORS = [
-    "rgba(255, 230, 240, 0.85)",
-    "rgba(255, 170, 210, 0.88)",
-    "rgba(255, 105, 180, 0.92)",
-    "rgba(255, 20, 147, 0.92)",
-    "rgba(255, 45, 85, 0.92)",
-    "rgba(220, 20, 60, 0.92)"
-  ];
-
-  // Load kiss image (your file is in repo root as kiss.png)
-  const kissImg = new Image();
-  kissImg.src = "kiss.png";
-  let kissReady = false;
-  kissImg.onload = () => { kissReady = true; };
-
-  // Build particles (hearts + kisses)
-  const particles = [];
-
-  function makeHeart(){
-    return {
-      t: "heart",
-      x: rand(0, W),
-      y: rand(0, H),
-      s: rand(0.7, 1.6),
-      v: rand(0.35, 1.10),
-      vx: rand(-0.30, 0.30),
-      r: rand(-Math.PI, Math.PI),
-      vr: rand(-0.006, 0.006),
-      wob: rand(0.6, 1.6),
-      wobPhase: rand(0, 1000),
-      a: rand(0.20, 0.36),
-      color: pick(HEART_COLORS)
-    };
-  }
-
-  function makeKiss(){
-    return {
-      t: "kiss",
-      x: rand(0, W),
-      y: rand(0, H),
-      // kisses slightly larger and floatier
-      size: rand(26, 44),
-      v: rand(0.25, 0.85),
-      vx: rand(-0.55, 0.55),   // move in more varied directions
-      r: rand(-Math.PI, Math.PI),
-      vr: rand(-0.010, 0.010),
-      wob: rand(0.8, 2.2),
-      wobPhase: rand(0, 1000),
-      a: rand(0.12, 0.22)      // keep subtle / luxe
-    };
-  }
-
-  for(let i=0;i<HEART_COUNT;i++) particles.push(makeHeart());
-  for(let i=0;i<KISS_COUNT;i++)  particles.push(makeKiss());
-
-  function drawHeart(h){
+  function drawHeart(x,y,scale,rot,alpha,color){
     ctx.save();
-    ctx.translate(h.x, h.y);
-    ctx.rotate(h.r);
-    ctx.globalAlpha = h.a;
+    ctx.translate(x,y);
+    ctx.rotate(rot);
+    ctx.globalAlpha = alpha;
 
-    ctx.fillStyle = h.color;
+    // Pink base + soft red overlay (same vibe you liked)
+    ctx.fillStyle = color;
     ctx.beginPath();
-    const s = 10 * h.s;
+    const s = 10 * scale;
     ctx.moveTo(0, -s/2);
     ctx.bezierCurveTo(-s, -s*1.35, -s*2.15, -s*0.15, 0, s*1.65);
     ctx.bezierCurveTo(s*2.15, -s*0.15, s, -s*1.35, 0, -s/2);
     ctx.closePath();
     ctx.fill();
-
-    // edge highlight helps pop
-    ctx.strokeStyle = "rgba(255,255,255,0.14)";
+    ctx.fillStyle = "rgba(255, 0, 80, 0.16)";
+    ctx.strokeStyle = "rgba(255,255,255,0.12)";
     ctx.lineWidth = 1;
     ctx.stroke();
 
     ctx.restore();
   }
 
-  function drawKiss(k){
-    if(!kissReady) return;
-    ctx.save();
-    ctx.translate(k.x, k.y);
-    ctx.rotate(k.r);
-    ctx.globalAlpha = k.a;
-
-    // soft “ink” look
-    ctx.globalCompositeOperation = "source-over";
-    // draw centered
-    const w = k.size * 1.6;
-    const h = k.size;
-    ctx.drawImage(kissImg, -w/2, -h/2, w, h);
-
-    ctx.restore();
-  }
-
-  function reset(p){
-    p.x = rand(0, W);
-    p.y = rand(-80, -20);
-
-    if(p.t === "heart"){
-      p.s = rand(0.7, 1.6);
-      p.v = rand(0.35, 1.10);
-      p.vx = rand(-0.30, 0.30);
-      p.a = rand(0.20, 0.36);
-      p.color = pick(HEART_COLORS);
-      p.r = rand(-Math.PI, Math.PI);
-    } else {
-      p.size = rand(26, 44);
-      p.v = rand(0.25, 0.85);
-      p.vx = rand(-0.55, 0.55);
-      p.a = rand(0.12, 0.22);
-      p.r = rand(-Math.PI, Math.PI);
-    }
-  }
-
   function tick(){
     ctx.clearRect(0,0,W,H);
 
-    for(const p of particles){
-      p.wobPhase += 0.012 * p.wob;
-      const drift = Math.sin(p.wobPhase) * WIND;
+    for(const h of hearts){
+      h.wobPhase += 0.012 * h.wob;
+      const drift = Math.sin(h.wobPhase) * WIND;
 
-      // hearts + kisses use the same “engine”
-      p.x += p.vx + drift;
-      p.y += p.v;
-      p.r += p.vr;
+      h.x += h.vx + drift;
+      h.y += h.v;
+      h.r += h.vr;
 
-      // wrap
-      if(p.x < -80) p.x = W + 80;
-      if(p.x > W + 80) p.x = -80;
-
-      if(p.y > H + 90){
-        reset(p);
+      // wrap around screen edges
+      if (h.x < -40) h.x = W + 40;
+      if (h.x > W + 40) h.x = -40;
+      if (h.y > H + 60){
+        h.y = -60;
+        h.x = rand(0, W);
+        h.v = rand(0.35, 1.10);
+        h.vx = rand(-0.30, 0.30); // NEW
+        h.s = rand(0.7, 1.6);
+        h.a = rand(0.16, 0.32);
+        h.color = COLORS[Math.floor(Math.random() * COLORS.length)]; // NEW
       }
 
-      if(p.t === "heart") drawHeart(p);
-      else drawKiss(p);
+      drawHeart(h.x, h.y, h.s, h.r, h.a, h.color);
     }
 
     requestAnimationFrame(tick);
@@ -473,6 +403,5 @@ updateAttemptsUI();
 
   tick();
 })();
-
   tick();
 })();
