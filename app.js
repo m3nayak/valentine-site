@@ -323,7 +323,7 @@ updateAttemptsUI();
 
   function rand(a,b){ return a + Math.random() * (b-a); }
 
-  const COUNT = 120;         // subtle density
+  const COUNT = 200;         // subtle density
   const WIND = 0.30;        // gentle sideways drift
   const COLORS = [
   "rgba(255, 230, 240, 0.85)", // blush highlight
@@ -417,9 +417,9 @@ updateAttemptsUI();
   ];
 
   // Soft-luxe tuning (subtle)
-  const MIN_MS = 1000;       // minimum time between spawns
-  const MAX_MS = 4000;       // maximum time between spawns
-  const MAX_ON_SCREEN = 10;   // keep it classy
+  const MIN_MS = 50;       // minimum time between spawns
+  const MAX_MS = 100;       // maximum time between spawns
+  const MAX_ON_SCREEN = 100;   // keep it classy
   const MIN_SIZE = 64;       // px
   const MAX_SIZE = 140;      // px
 
