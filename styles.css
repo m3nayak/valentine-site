@@ -36,7 +36,11 @@ body{
   pointer-events: none;
   opacity: .55;
 }
-.wrap { width: min(1040px, 100%); }
+.wrap{
+  width: min(1040px, 100%);
+  position: relative;
+  z-index: 1;
+}
 
 .topbar{
   display:flex;
@@ -197,6 +201,41 @@ button{
 .letterWrap.unlocked .revealTitle{
   opacity: 1;
   transform: translateY(0);
+}
+/* Lipstick kiss popups layer (behind content, above background) */
+.kissLayer{
+  position: fixed;
+  inset: 0;
+  z-index: 0;              /* same as canvas; content sits above */
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* A single lipstick kiss stamp */
+.kissPop{
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  background-image: var(--img);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  opacity: 0;
+  transform: translateY(10px) rotate(var(--rot)) scale(0.96);
+
+  /* soft-luxe feel */
+  filter: blur(0px);
+  mix-blend-mode: multiply;
+  filter: saturate(1.15) contrast(1.05);
+  animation: kissFloatFade var(--dur) ease-out forwards;
+}
+
+/* fade in → gentle float → fade out */
+@keyframes kissFloatFade{
+  0%   { opacity: 0; transform: translateY(10px) rotate(var(--rot)) scale(0.96); }
+  12%  { opacity: var(--op); }
+  100% { opacity: 0; transform: translateY(-26px) rotate(var(--rot)) scale(1.06); }
 }
 
 /* Envelope */
