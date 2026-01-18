@@ -222,20 +222,39 @@ button{
   background-position: center;
 
   opacity: 0;
-  transform: translateY(10px) rotate(var(--rot)) scale(0.96);
+  transform: translateY(16px) rotate(var(--rot)) scale(0.85);
+  transform-origin: center;
 
-  /* soft-luxe feel */
-  filter: blur(0px);
   mix-blend-mode: multiply;
-  filter: saturate(1.15) contrast(1.05);
-  animation: kissFloatFade var(--dur) ease-out forwards;
+  filter: saturate(1.18) contrast(1.06);
+
+  animation: kissMwah var(--dur) cubic-bezier(.2,.9,.2,1) forwards;
 }
 
 /* fade in → gentle float → fade out */
-@keyframes kissFloatFade{
-  0%   { opacity: 0; transform: translateY(10px) rotate(var(--rot)) scale(0.96); }
-  12%  { opacity: var(--op); }
-  100% { opacity: 0; transform: translateY(-26px) rotate(var(--rot)) scale(1.06); }
+
+/* “mwah” motion: pop in → tiny kiss bounce → float away */
+@keyframes kissMwah{
+  0%{
+    opacity: 0;
+    transform: translateY(16px) rotate(var(--rot)) scale(0.80);
+  }
+  12%{
+    opacity: var(--op);
+    transform: translateY(6px) rotate(calc(var(--rot) - 6deg)) scale(1.10);
+  }
+  22%{
+    opacity: var(--op);
+    transform: translateY(10px) rotate(calc(var(--rot) + 4deg)) scale(0.98);
+  }
+  45%{
+    opacity: calc(var(--op) * 0.92);
+    transform: translateY(-4px) rotate(var(--rot)) scale(1.04);
+  }
+  100%{
+    opacity: 0;
+    transform: translateY(-34px) rotate(calc(var(--rot) + 2deg)) scale(1.10);
+  }
 }
 
 /* Envelope */
