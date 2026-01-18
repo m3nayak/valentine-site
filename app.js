@@ -14,6 +14,8 @@ const PHOTO_URLS = [
   // "assets/2.jpg",
 ];
 
+<canvas id="heartsCanvas" class="heartsCanvas" aria-hidden="true"></canvas>
+
 // Elements
 const q1 = document.getElementById("q1");
 const q2 = document.getElementById("q2");
