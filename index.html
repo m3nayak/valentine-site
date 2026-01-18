@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>For You ❤️</title>
+  <title>To my handsome Shaybie ❤️</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
@@ -33,19 +33,19 @@
         </p>
 
         <label for="q1">1) The very first nickname you gave me</label>
-        <input id="q1" autocomplete="off" placeholder="One word" />
+        <input id="q1" autocomplete="off" placeholder="Hint: One-word answer" />
 
         <label for="q2">2) The place where I wished we had our first kiss</label>
-        <input id="q2" autocomplete="off" placeholder="Two words max (we accept Griffith/Griffiths)" />
+        <input id="q2" autocomplete="off" placeholder="Hint: Two-word answer" />
 
         <label for="q3">3) The song we both fell in love with and kept playing in Vegas</label>
-        <input id="q3" autocomplete="off" placeholder="One word" />
+        <input id="q3" autocomplete="off" placeholder="Hint: One-word answer" />
 
         <label for="q4">4) Where we first met physically</label>
-        <input id="q4" autocomplete="off" placeholder="Two words max" />
+        <input id="q4" autocomplete="off" placeholder="Hint: Two-word answer" />
 
         <label for="q5">5) Which flowers did you gift me on our first physical meet</label>
-        <input id="q5" autocomplete="off" placeholder="Two words (colour + flower)" />
+        <input id="q5" autocomplete="off" placeholder="Hint: Two-word answer" />
 
         <div class="recipe">
           <div class="recipeTitle">How to build the secret phrase</div>
@@ -178,6 +178,27 @@ There’s one thing I want to ask you…
     </section>
 
     <!-- Netlify form: sends you the YES/NO result -->
+    <!-- Netlify form: captures his final answer -->
+    <form
+      name="valentine-result"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+    >
+    <input type="hidden" name="form-name" value="valentine-result" />
+    <p style="display:none;">
+      <label>
+        Don’t fill this out:
+        <input name="bot-field" />
+      </label>
+    </p>
+
+  <!-- These inputs will be filled & submitted by JS -->
+  <input type="text" name="choice" />
+  <input type="text" name="timestamp" />
+  <input type="text" name="note" />
+</form>
+
     <form name="valentine-result" netlify netlify-honeypot="bot-field" hidden>
       <input name="bot-field" />
       <input type="text" name="choice" />
