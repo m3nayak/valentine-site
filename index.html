@@ -30,28 +30,46 @@
     <section class="grid card">
       <!-- LEFT: Unlock Quest -->
       <aside class="panel">
-        <h2>Unlock Quest 🔒</h2>
-        <p class="lead">
-          These are only for you. When you’re done, you’ll turn our story into one phrase to open the envelope.
-        </p>
+  <h2>Unlock Quest 🔒</h2>
 
-        <label for="q1">1) The very first nickname you gave me</label>
-        <input id="q1" autocomplete="off" placeholder="Hint: One-word answer" />
+  <p class="lead" id="questIntro">
+    To open the envelope and read what’s inside, you’ll answer a few questions about us.
+    When you’re done, you’ll use your answers to build the secret phrase ✨
+  </p>
 
-        <label for="q2">2) The place where I wished we had our first kiss</label>
-        <input id="q2" autocomplete="off" placeholder="Hint: Two-word answer" />
+  <div class="questLayout">
+    <!-- Left: Envelope visual -->
+    <div class="questLeft" aria-hidden="true">
+      <div class="questEnvelope" id="questEnvelope">
+        <div class="envHint">Tap to begin 💌</div>
+      </div>
+    </div>
 
-        <label for="q3">3) The song we both fell in love with and kept playing in Vegas</label>
-        <input id="q3" autocomplete="off" placeholder="Hint: One-word answer" />
+    <!-- Right: One question at a time -->
+    <div class="questRight">
+      <div class="questCard" id="questCard">
+        <div class="questTop">
+          <div class="questProgress" id="questProgress">Question 1 of 5</div>
+          <div class="questDots" id="questDots" aria-hidden="true"></div>
+        </div>
 
-        <label for="q4">4) Where we first met physically</label>
-        <input id="q4" autocomplete="off" placeholder="Hint: Two-word answer" />
+        <div class="questQ" id="questQText">—</div>
+        <input id="questInput" autocomplete="off" placeholder="Type your answer…" />
+        <div class="questHint hidden" id="questHint"></div>
 
-        <label for="q5">5) Which flowers did you gift me on our first physical meet</label>
-        <input id="q5" autocomplete="off" placeholder="Hint: Two-word answer" />
+        <div class="row">
+          <button class="primary" id="questNextBtn" type="button">Submit</button>
+          <button class="ghost" id="questResetBtn" type="button">Start over</button>
+        </div>
 
+        <div class="error" id="questError">Not quite, my love ❤️ Try again.</div>
+        <div class="success" id="questOk">Perfect ✅</div>
+      </div>
+
+      <!-- After wizard finishes, show your existing recipe + secret phrase input -->
+      <div class="questDone hidden" id="questDone">
         <div class="recipe">
-          <div class="recipeTitle">Password Tips</div>
+          <div class="recipeTitle">Now build the secret phrase</div>
           <ul>
             <li><b>Q1:</b> take the <b>first two letters</b></li>
             <li><b>Q2:</b> take the <b>most common letter</b> in your answer</li>
@@ -59,66 +77,39 @@
             <li><b>Q5:</b> take the <b>last letter</b> of the colour + then the <b>flower (singular)</b></li>
             <li><b>Q4:</b> take the <b>first two letters</b> of the airport code</li>
           </ul>
-          <div class="small">
-            Type that password below (lowercase, no spaces).
-          </div>
+          <div class="small">Type that phrase below (lowercase, no spaces).</div>
         </div>
 
-        <label for="pw">Secret Password</label>
-        <input id="pw" autocomplete="off" />
+        <label for="pw">Secret phrase</label>
+        <input id="pw" autocomplete="off" placeholder="e.g. cupidrosela" />
 
         <div class="row">
           <button class="primary" id="unlockBtn" type="button">Unlock the envelope</button>
           <button class="ghost" id="resetBtn" type="button">Reset</button>
         </div>
 
-        <div class="error" id="errorMsg">Not quite right, my jaan. Try again, my love ❤️</div>
-        <div class="success" id="successMsg"> Yayy!!! You have unlocked it!!! →</div>
+        <div class="error" id="errorMsg">Not quite. Try again, my love ❤️</div>
+        <div class="success" id="successMsg">Unlocked ✅ Open the letter →</div>
 
         <div class="attempts" id="attemptsText" aria-live="polite"></div>
 
-        <!-- Hints appear only after 3 failed attempts -->
         <div class="hints hidden" id="hintsBox">
-          <div class="hintCard">
-            <b>Hint for Q1</b>
-            <p>The nickname that you came up for me initially during our competition on who can come up with the best nickname for each other"</p>
-          </div>
-
-          <div class="hintCard">
-            <b>Hint for Q2</b>
-            <p>It was our first date and you drove me here at night. I wanted to kiss you here but it was raining.</p>
-          </div>
-
-          <div class="hintCard">
-            <b>Hint for Q3</b>
-            <p>It's our facourite Ed Sheeran song, which also played when we went to watch the fountains in Las Vegas</p>
-          </div>
-
-          <div class="hintCard">
-            <b>Hint for Q4</b>
-            <p>What airport did I arrive at?</p>
-          </div>
-
-          <div class="hintCard">
-            <b>Hint for Q5</b>
-            <p>
-              Two words.<br>
-              <b>First word</b> = the <b>colour</b>.<br>
-              <b>Second word</b> = the <b>type of flower</b>.
-            </p>
-          </div>
+          <!-- keep your existing hint cards here if you want -->
         </div>
+      </div>
+    </div>
+  </div>
 
-        <details class="admin">
-          <summary>Admin (you only): generate hash</summary>
-          <p class="small">
-            Use this once: type the <b>correct</b> answers + correct secret phrase,
-            click generate, then paste the SHA-256 into <code>app.js</code>.
-          </p>
-          <button class="ghost" id="genHashBtn" type="button">Generate correct hash</button>
-          <pre class="hashOut" id="hashOut">(hash will appear here)</pre>
-        </details>
-      </aside>
+  <!-- Keep your Admin hash generator (optional) -->
+  <details class="admin">
+    <summary>Admin (you only): generate hash</summary>
+    <p class="small">
+      Use this once: type the correct phrase, click generate, then paste SHA-256 into <code>app.js</code>.
+    </p>
+    <button class="ghost" id="genHashBtn" type="button">Generate correct hash</button>
+    <pre class="hashOut" id="hashOut">(hash will appear here)</pre>
+  </details>
+</aside>
 
       <!-- RIGHT: Envelope + Letter -->
       <section class="letterWrap">
