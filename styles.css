@@ -85,6 +85,127 @@ body{
 }
 .panel h2{margin:0 0 8px 0; font-size:16px}
 .lead{margin:0 0 14px 0; opacity:.80; font-size:13px; line-height:1.45}
+/* Wizard layout inside the left panel */
+.questLayout{
+  display:grid;
+  grid-template-columns: 160px 1fr;
+  gap: 12px;
+  align-items: start;
+  margin-top: 10px;
+}
+
+@media (max-width: 520px){
+  .questLayout{
+    grid-template-columns: 1fr;
+  }
+}
+
+.questLeft{
+  display:flex;
+  justify-content:center;
+}
+
+.questEnvelope{
+  width: 150px;
+  height: 120px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,.55), transparent 55%),
+    url("assets/envelope.png") center/contain no-repeat;
+  filter: drop-shadow(0 16px 26px rgba(0,0,0,.18));
+  position: relative;
+  cursor: pointer;
+  animation: envBreathe 2600ms ease-in-out infinite;
+}
+
+@keyframes envBreathe{
+  0%,100% { transform: translateY(0) scale(1); }
+  50%     { transform: translateY(-4px) scale(1.02); }
+}
+
+.envHint{
+  position:absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  font-size: 11px;
+  opacity: .75;
+  background: rgba(255,255,255,.55);
+  border: 1px solid rgba(0,0,0,.06);
+  padding: 6px 10px;
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+}
+
+.questCard{
+  border-radius: 16px;
+  padding: 12px;
+  background: rgba(255,255,255,.48);
+  border: 1px solid rgba(0,0,0,.06);
+}
+
+.questTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.questProgress{
+  font-size: 12px;
+  opacity: .75;
+  font-weight: 700;
+}
+
+.questDots{
+  display:flex;
+  gap:6px;
+}
+.questDots span{
+  width:8px;height:8px;border-radius:999px;
+  background: rgba(255,255,255,.55);
+  border: 1px solid rgba(0,0,0,.10);
+  opacity: .55;
+}
+.questDots span.on{
+  opacity: 1;
+  background: linear-gradient(135deg, rgba(255,82,150,.95), rgba(255,200,120,.85));
+  border-color: rgba(0,0,0,.06);
+}
+
+.questQ{
+  font-weight: 800;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.questHint{
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: .8;
+  line-height: 1.45;
+  background: rgba(0,0,0,.10);
+  border: 1px solid rgba(255,255,255,.18);
+  padding: 10px;
+  border-radius: 14px;
+}
+
+.questDone{
+  margin-top: 12px;
+}
+
+/* little “wrong answer” shake */
+.shake{
+  animation: shake 420ms ease;
+}
+@keyframes shake{
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
 
 label{display:block; font-size:12px; opacity:.85; margin:12px 0 6px}
 input{
