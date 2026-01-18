@@ -325,27 +325,28 @@ updateAttemptsUI();
 
   const COUNT = 75;         // subtle density
   const WIND = 0.30;        // gentle sideways drift
-const COLORS = [
-  "rgba(255, 105, 180, 0.55)", // hot pink
-  "rgba(255, 182, 193, 0.55)", // light pink
-  "rgba(255, 20, 147, 0.50)",  // deep pink
-  "rgba(255, 99, 132, 0.50)",  // soft red-pink
-  "rgba(220, 20, 60, 0.45)"    // crimson (subtle)
-];
-
-const hearts = Array.from({length: COUNT}).map(() => ({
-  x: rand(0, W),
-  y: rand(0, H),
-  s: rand(0.7, 1.6),
-  v: rand(0.35, 1.10),
-  r: rand(-Math.PI, Math.PI),
-  vr: rand(-0.006, 0.006),
-  wob: rand(0.6, 1.6),
-  wobPhase: rand(0, 1000),
-  a: rand(0.16, 0.32),
-  color: COLORS[Math.floor(Math.random() * COLORS.length)]
-}));
-
+  const COLORS = [
+    "rgba(255, 205, 230, 0.65)", // very light blush
+    "rgba(255, 163, 214, 0.70)", // pastel pink
+    "rgba(255, 105, 180, 0.72)", // hot pink
+    "rgba(255, 20, 147, 0.72)",  // deep pink
+    "rgba(255, 60, 90, 0.70)",   // vivid rose red
+    "rgba(220, 20, 60, 0.68)"    // crimson
+  ];
+  
+  const hearts = Array.from({length: COUNT}).map(() => ({
+    x: rand(0, W),
+    y: rand(0, H),
+    s: rand(0.7, 1.6),
+    v: rand(0.35, 1.10),
+    vx: rand(-0.30, 0.30),       // NEW: balanced left/right
+    r: rand(-Math.PI, Math.PI),
+    vr: rand(-0.006, 0.006),
+    wob: rand(0.6, 1.6),
+    wobPhase: rand(0, 1000),
+    a: rand(0.16, 0.32),
+    color: COLORS[Math.floor(Math.random() * COLORS.length)]
+  }));
 
   function drawHeart(x,y,scale,rot,alpha,color){
     ctx.save();
@@ -365,6 +366,9 @@ const hearts = Array.from({length: COUNT}).map(() => ({
 
     ctx.fillStyle = "rgba(255, 0, 80, 0.16)";
     ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.12)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
 
     ctx.restore();
   }
@@ -376,7 +380,7 @@ const hearts = Array.from({length: COUNT}).map(() => ({
       h.wobPhase += 0.012 * h.wob;
       const drift = Math.sin(h.wobPhase) * WIND;
 
-      h.x += drift;
+      h.x += h.vx + drift;
       h.y += h.v;
       h.r += h.vr;
 
@@ -387,8 +391,10 @@ const hearts = Array.from({length: COUNT}).map(() => ({
         h.y = -60;
         h.x = rand(0, W);
         h.v = rand(0.35, 1.10);
+        h.vx = rand(-0.30, 0.30); // NEW
         h.s = rand(0.7, 1.6);
         h.a = rand(0.16, 0.32);
+        h.color = COLORS[Math.floor(Math.random() * COLORS.length)]; // NEW
       }
 
       drawHeart(h.x, h.y, h.s, h.r, h.a, h.color);
