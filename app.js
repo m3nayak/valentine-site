@@ -2,7 +2,7 @@
 
 // 1) Paste the SHA-256 hash (hex) of the CORRECT secret phrase here.
 // You will generate it once using the Admin panel in the UI.
-const CORRECT_PHRASE_HASH_HEX = "PASTE_HASH_HERE";
+const CORRECT_PHRASE_HASH_HEX = "559e13c28aaac095cac0e1e2c726e6efee385ceb41536e9acd0295dfeab80802";
 
 // Optional signature name:
 const SIGNATURE_NAME = "Manju";
