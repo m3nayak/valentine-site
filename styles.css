@@ -238,12 +238,12 @@ button{
     opacity: 0;
     transform: rotate(var(--rot)) scale(0.88);
   }
-  20%{
+  22%{
     opacity: var(--op);
     transform: rotate(var(--rot)) scale(1.02);
   }
-  55%{
-    opacity: calc(var(--op) * 0.95);
+  60%{
+    opacity: calc(var(--op) * 0.85);
     transform: rotate(var(--rot)) scale(1.10);
   }
   100%{
