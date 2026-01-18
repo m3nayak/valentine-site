@@ -9,8 +9,11 @@
 </head>
 
 <body>
-  <!-- Falling hearts / kisses background -->
+  <!-- Falling hearts background -->
   <canvas id="heartsCanvas" class="heartsCanvas" aria-hidden="true"></canvas>
+
+  <!-- Lipstick kiss popups background layer (JS will inject items here) -->
+  <div id="kissLayer" class="kissLayer" aria-hidden="true"></div>
 
   <main class="wrap">
     <header class="topbar">
@@ -177,7 +180,6 @@ There’s one thing I want to ask you…
       </section>
     </section>
 
-    <!-- Netlify form: sends you the YES/NO result -->
     <!-- Netlify form: captures his final answer -->
     <form
       name="valentine-result"
@@ -185,22 +187,15 @@ There’s one thing I want to ask you…
       data-netlify="true"
       netlify-honeypot="bot-field"
     >
-    <input type="hidden" name="form-name" value="valentine-result" />
-    <p style="display:none;">
-      <label>
-        Don’t fill this out:
-        <input name="bot-field" />
-      </label>
-    </p>
+      <input type="hidden" name="form-name" value="valentine-result" />
+      <p style="display:none;">
+        <label>
+          Don’t fill this out:
+          <input name="bot-field" />
+        </label>
+      </p>
 
-  <!-- These inputs will be filled & submitted by JS -->
-  <input type="text" name="choice" />
-  <input type="text" name="timestamp" />
-  <input type="text" name="note" />
-</form>
-
-    <form name="valentine-result" netlify netlify-honeypot="bot-field" hidden>
-      <input name="bot-field" />
+      <!-- These inputs will be filled & submitted by JS -->
       <input type="text" name="choice" />
       <input type="text" name="timestamp" />
       <input type="text" name="note" />
