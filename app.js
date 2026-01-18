@@ -303,31 +303,70 @@ envelope.classList.remove("open");
 setUnlocked(false);
 updateAttemptsUI();
 
-/* Falling hearts + kisses background */
-(function heartsBackground(){
+// app.js — replace ONLY the existing heartsBackground IIFE at the bottom
+// (the part that starts with: (function heartsBackground(){ ... })();
+// Replace it with this one:
+
+(function softLuxeConfetti(){
   const canvas = document.getElementById("heartsCanvas");
   if(!canvas) return;
   const ctx = canvas.getContext("2d");
 
+  let W = 0, H = 0;
   function resize(){
-    canvas.width = window.innerWidth * devicePixelRatio;
-    canvas.height = window.innerHeight * devicePixelRatio;
-    canvas.style.width = window.innerWidth + "px";
-    canvas.style.height = window.innerHeight + "px";
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
     ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
   }
   window.addEventListener("resize", resize);
   resize();
 
-  const items = Array.from({length: 48}).map(() => ({
-    x: Math.random() * window.innerWidth,
-    y: Math.random() * window.innerHeight,
-    s: 0.6 + Math.random() * 1.4,
-    v: 0.4 + Math.random() * 1.2,
-    r: (Math.random() * Math.PI),
-    w: 0.6 + Math.random() * 1.4,
-    t: Math.random() < 0.15 ? "kiss" : "heart"
-  }));
+  // Soft luxe tuning
+  const MAX_PARTICLES = 56;      // keep it subtle
+  const KISS_RATE = 0.16;        // ~16% are 💋
+  const GRAVITY = 0.035;         // gentle acceleration
+  const WIND = 0.18;             // slow drift
+  const FLOOR_PADDING = 8;
+
+  // Accumulation (pile) — will slowly rise up to a cap
+  let pile = {
+    height: 0,
+    cap: Math.max(60, Math.min(220, Math.round(H * 0.18))), // ~18% of screen height max
+    density: 1.0
+  };
+
+  function rand(a,b){ return a + Math.random() * (b-a); }
+
+  function makeParticle(){
+    const isKiss = Math.random() < KISS_RATE;
+    const size = isKiss ? rand(12, 22) : rand(10, 20);
+    return {
+      t: isKiss ? "kiss" : "heart",
+      x: rand(0, W),
+      y: rand(-H, 0),
+      vx: rand(-0.25, 0.25),
+      vy: rand(0.35, 1.05),
+      r: rand(-Math.PI, Math.PI),
+      vr: rand(-0.008, 0.008),
+      s: size,
+      a: rand(0.18, 0.38),         // low alpha = luxe
+      wob: rand(0.6, 1.6),
+      wobPhase: rand(0, 1000),
+      landed: false,
+      // landed position in pile band
+      lx: 0,
+      ly: 0,
+      lr: 0,
+      la: 0
+    };
+  }
+
+  const particles = Array.from({length: MAX_PARTICLES}, makeParticle);
+  const landed = []; // we keep a rolling list of landed particles to draw the pile
 
   function drawHeart(x,y,scale,rot,alpha){
     ctx.save();
@@ -335,53 +374,133 @@ updateAttemptsUI();
     ctx.rotate(rot);
     ctx.globalAlpha = alpha;
 
-    ctx.fillStyle = "rgba(255,105,180,0.35)";
+    // Heart fill: pink + red overlay, subtle
+    ctx.fillStyle = "rgba(255, 105, 180, 0.55)";
     ctx.beginPath();
-    const s = 10 * scale;
+    const s = 8.8 * scale;
     ctx.moveTo(0, -s/2);
-    ctx.bezierCurveTo(-s, -s*1.4, -s*2.2, -s*0.2, 0, s*1.8);
-    ctx.bezierCurveTo(s*2.2, -s*0.2, s, -s*1.4, 0, -s/2);
+    ctx.bezierCurveTo(-s, -s*1.35, -s*2.15, -s*0.15, 0, s*1.65);
+    ctx.bezierCurveTo(s*2.15, -s*0.15, s, -s*1.35, 0, -s/2);
     ctx.closePath();
     ctx.fill();
 
-    ctx.fillStyle = "rgba(255,0,0,0.12)";
+    ctx.fillStyle = "rgba(255, 0, 80, 0.16)";
     ctx.fill();
 
     ctx.restore();
   }
 
-  function drawKiss(x,y,scale,rot,alpha){
+  function drawKiss(x,y,size,rot,alpha){
     ctx.save();
     ctx.translate(x,y);
     ctx.rotate(rot);
     ctx.globalAlpha = alpha;
-    ctx.fillStyle = "rgba(255,105,180,0.22)";
-    ctx.font = `${Math.round(18*scale)}px ui-sans-serif, system-ui`;
-    ctx.fillText("💋", -8*scale, 8*scale);
+    ctx.font = `${Math.round(size)}px ui-sans-serif, system-ui`;
+    ctx.fillText("💋", -size*0.55, size*0.55);
     ctx.restore();
   }
 
-  function tick(){
-    ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
+  function floorY(){
+    return H - FLOOR_PADDING - pile.height;
+  }
 
-    for(const it of items){
-      it.y += it.v;
-      it.x += Math.sin(it.y/80) * it.w;
-      it.r += 0.003;
+  function landParticle(p){
+    p.landed = true;
+    p.lx = p.x;
+    // Place within the pile band
+    const bandTop = H - FLOOR_PADDING - Math.max(18, pile.height);
+    const bandBottom = H - FLOOR_PADDING;
+    p.ly = rand(bandTop, bandBottom);
+    p.lr = rand(-0.35, 0.35);
+    p.la = rand(0.10, 0.22); // even more subtle in the pile
+    landed.push(p);
 
-      const alpha = 0.35;
-      if(it.t === "kiss"){
-        drawKiss(it.x, it.y, it.s, it.r, alpha);
+    // keep pile list bounded so it doesn't get heavy
+    while (landed.length > 220) landed.shift();
+
+    // gently increase pile height up to cap
+    pile.height = Math.min(pile.cap, pile.height + rand(0.35, 1.15));
+  }
+
+  function drawPile(){
+    if (landed.length === 0) return;
+
+    // faint “mist” band to unify the pile visually (very soft)
+    ctx.save();
+    ctx.globalAlpha = 0.10;
+    ctx.fillStyle = "rgba(255, 105, 180, 0.40)";
+    const y0 = H - FLOOR_PADDING - pile.height;
+    ctx.fillRect(0, y0, W, pile.height + FLOOR_PADDING);
+    ctx.restore();
+
+    // draw landed particles
+    for (const p of landed){
+      if (p.t === "kiss"){
+        drawKiss(p.lx, p.ly, p.s, p.lr, p.la);
       } else {
-        drawHeart(it.x, it.y, it.s, it.r, alpha);
-      }
-
-      if(it.y > window.innerHeight + 40){
-        it.y = -40;
-        it.x = Math.random() * window.innerWidth;
+        drawHeart(p.lx, p.ly, p.s/16, p.lr, p.la);
       }
     }
+  }
+
+  function resetFalling(p){
+    p.t = (Math.random() < KISS_RATE) ? "kiss" : "heart";
+    p.x = rand(0, W);
+    p.y = rand(-120, -20);
+    p.vx = rand(-0.25, 0.25);
+    p.vy = rand(0.35, 1.05);
+    p.r = rand(-Math.PI, Math.PI);
+    p.vr = rand(-0.008, 0.008);
+    p.s = (p.t === "kiss") ? rand(12, 22) : rand(10, 20);
+    p.a = rand(0.18, 0.38);
+    p.wob = rand(0.6, 1.6);
+    p.wobPhase = rand(0, 1000);
+    p.landed = false;
+  }
+
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+
+    // draw pile behind falling particles (so it feels like background)
+    drawPile();
+
+    const fy = floorY();
+
+    for (const p of particles){
+      if (p.landed) continue;
+
+      // motion
+      p.wobPhase += 0.012 * p.wob;
+      const drift = Math.sin(p.wobPhase) * WIND;
+
+      p.vy += GRAVITY;
+      p.x += p.vx + drift;
+      p.y += p.vy;
+      p.r += p.vr;
+
+      // wrap horizontally
+      if (p.x < -40) p.x = W + 40;
+      if (p.x > W + 40) p.x = -40;
+
+      // draw
+      if (p.t === "kiss"){
+        drawKiss(p.x, p.y, p.s, p.r, p.a);
+      } else {
+        drawHeart(p.x, p.y, p.s/16, p.r, p.a);
+      }
+
+      // land into pile band when reaching the floor line
+      if (p.y >= fy){
+        landParticle(p);
+        // recycle the falling particle as a new one
+        resetFalling(p);
+      }
+    }
+
     requestAnimationFrame(tick);
   }
+
   tick();
 })();
+
+
