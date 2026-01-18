@@ -434,7 +434,7 @@ updateAttemptsUI();
 
     const size = Math.round(rand(MIN_SIZE, MAX_SIZE));
     const rot = Math.round(rand(-18, 18));
-    const dur = Math.round(rand(4200, 6800)); // ms
+    const dur = Math.round(rand(6500, 10500)); // ms
     const op  = rand(0.10, 0.22).toFixed(2);
 
     // Keep them away from edges a bit so they feel intentional
