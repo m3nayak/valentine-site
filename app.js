@@ -303,11 +303,7 @@ envelope.classList.remove("open");
 setUnlocked(false);
 updateAttemptsUI();
 
-// app.js — replace ONLY the existing heartsBackground IIFE at the bottom
-// (the part that starts with: (function heartsBackground(){ ... })();
-// Replace it with this one:
-
-(function softLuxeConfetti(){
+(function softLuxeHeartsOnly(){
   const canvas = document.getElementById("heartsCanvas");
   if(!canvas) return;
   const ctx = canvas.getContext("2d");
@@ -325,48 +321,21 @@ updateAttemptsUI();
   window.addEventListener("resize", resize);
   resize();
 
-  // Soft luxe tuning
-  const MAX_PARTICLES = 56;      // keep it subtle
-  const KISS_RATE = 0.16;        // ~16% are 💋
-  const GRAVITY = 0.035;         // gentle acceleration
-  const WIND = 0.18;             // slow drift
-  const FLOOR_PADDING = 8;
-
-  // Accumulation (pile) — will slowly rise up to a cap
-  let pile = {
-    height: 0,
-    cap: Math.max(60, Math.min(220, Math.round(H * 0.18))), // ~18% of screen height max
-    density: 1.0
-  };
-
   function rand(a,b){ return a + Math.random() * (b-a); }
 
-  function makeParticle(){
-    const isKiss = Math.random() < KISS_RATE;
-    const size = isKiss ? rand(12, 22) : rand(10, 20);
-    return {
-      t: isKiss ? "kiss" : "heart",
-      x: rand(0, W),
-      y: rand(-H, 0),
-      vx: rand(-0.25, 0.25),
-      vy: rand(0.35, 1.05),
-      r: rand(-Math.PI, Math.PI),
-      vr: rand(-0.008, 0.008),
-      s: size,
-      a: rand(0.18, 0.38),         // low alpha = luxe
-      wob: rand(0.6, 1.6),
-      wobPhase: rand(0, 1000),
-      landed: false,
-      // landed position in pile band
-      lx: 0,
-      ly: 0,
-      lr: 0,
-      la: 0
-    };
-  }
-
-  const particles = Array.from({length: MAX_PARTICLES}, makeParticle);
-  const landed = []; // we keep a rolling list of landed particles to draw the pile
+  const COUNT = 52;         // subtle density
+  const WIND = 0.22;        // gentle sideways drift
+  const hearts = Array.from({length: COUNT}).map(() => ({
+    x: rand(0, W),
+    y: rand(0, H),
+    s: rand(0.7, 1.6),      // size scale
+    v: rand(0.35, 1.10),    // fall speed
+    r: rand(-Math.PI, Math.PI),
+    vr: rand(-0.006, 0.006),
+    wob: rand(0.6, 1.6),
+    wobPhase: rand(0, 1000),
+    a: rand(0.16, 0.32)     // low alpha = luxe
+  }));
 
   function drawHeart(x,y,scale,rot,alpha){
     ctx.save();
@@ -374,10 +343,10 @@ updateAttemptsUI();
     ctx.rotate(rot);
     ctx.globalAlpha = alpha;
 
-    // Heart fill: pink + red overlay, subtle
+    // Pink base + soft red overlay (same vibe you liked)
     ctx.fillStyle = "rgba(255, 105, 180, 0.55)";
     ctx.beginPath();
-    const s = 8.8 * scale;
+    const s = 10 * scale;
     ctx.moveTo(0, -s/2);
     ctx.bezierCurveTo(-s, -s*1.35, -s*2.15, -s*0.15, 0, s*1.65);
     ctx.bezierCurveTo(s*2.15, -s*0.15, s, -s*1.35, 0, -s/2);
@@ -390,111 +359,29 @@ updateAttemptsUI();
     ctx.restore();
   }
 
-  function drawKiss(x,y,size,rot,alpha){
-    ctx.save();
-    ctx.translate(x,y);
-    ctx.rotate(rot);
-    ctx.globalAlpha = alpha;
-    ctx.font = `${Math.round(size)}px ui-sans-serif, system-ui`;
-    ctx.fillText("💋", -size*0.55, size*0.55);
-    ctx.restore();
-  }
-
-  function floorY(){
-    return H - FLOOR_PADDING - pile.height;
-  }
-
-  function landParticle(p){
-    p.landed = true;
-    p.lx = p.x;
-    // Place within the pile band
-    const bandTop = H - FLOOR_PADDING - Math.max(18, pile.height);
-    const bandBottom = H - FLOOR_PADDING;
-    p.ly = rand(bandTop, bandBottom);
-    p.lr = rand(-0.35, 0.35);
-    p.la = rand(0.10, 0.22); // even more subtle in the pile
-    landed.push(p);
-
-    // keep pile list bounded so it doesn't get heavy
-    while (landed.length > 220) landed.shift();
-
-    // gently increase pile height up to cap
-    pile.height = Math.min(pile.cap, pile.height + rand(0.35, 1.15));
-  }
-
-  function drawPile(){
-    if (landed.length === 0) return;
-
-    // faint “mist” band to unify the pile visually (very soft)
-    ctx.save();
-    ctx.globalAlpha = 0.10;
-    ctx.fillStyle = "rgba(255, 105, 180, 0.40)";
-    const y0 = H - FLOOR_PADDING - pile.height;
-    ctx.fillRect(0, y0, W, pile.height + FLOOR_PADDING);
-    ctx.restore();
-
-    // draw landed particles
-    for (const p of landed){
-      if (p.t === "kiss"){
-        drawKiss(p.lx, p.ly, p.s, p.lr, p.la);
-      } else {
-        drawHeart(p.lx, p.ly, p.s/16, p.lr, p.la);
-      }
-    }
-  }
-
-  function resetFalling(p){
-    p.t = (Math.random() < KISS_RATE) ? "kiss" : "heart";
-    p.x = rand(0, W);
-    p.y = rand(-120, -20);
-    p.vx = rand(-0.25, 0.25);
-    p.vy = rand(0.35, 1.05);
-    p.r = rand(-Math.PI, Math.PI);
-    p.vr = rand(-0.008, 0.008);
-    p.s = (p.t === "kiss") ? rand(12, 22) : rand(10, 20);
-    p.a = rand(0.18, 0.38);
-    p.wob = rand(0.6, 1.6);
-    p.wobPhase = rand(0, 1000);
-    p.landed = false;
-  }
-
   function tick(){
     ctx.clearRect(0,0,W,H);
 
-    // draw pile behind falling particles (so it feels like background)
-    drawPile();
+    for(const h of hearts){
+      h.wobPhase += 0.012 * h.wob;
+      const drift = Math.sin(h.wobPhase) * WIND;
 
-    const fy = floorY();
+      h.x += drift;
+      h.y += h.v;
+      h.r += h.vr;
 
-    for (const p of particles){
-      if (p.landed) continue;
-
-      // motion
-      p.wobPhase += 0.012 * p.wob;
-      const drift = Math.sin(p.wobPhase) * WIND;
-
-      p.vy += GRAVITY;
-      p.x += p.vx + drift;
-      p.y += p.vy;
-      p.r += p.vr;
-
-      // wrap horizontally
-      if (p.x < -40) p.x = W + 40;
-      if (p.x > W + 40) p.x = -40;
-
-      // draw
-      if (p.t === "kiss"){
-        drawKiss(p.x, p.y, p.s, p.r, p.a);
-      } else {
-        drawHeart(p.x, p.y, p.s/16, p.r, p.a);
+      // wrap around screen edges
+      if (h.x < -40) h.x = W + 40;
+      if (h.x > W + 40) h.x = -40;
+      if (h.y > H + 60){
+        h.y = -60;
+        h.x = rand(0, W);
+        h.v = rand(0.35, 1.10);
+        h.s = rand(0.7, 1.6);
+        h.a = rand(0.16, 0.32);
       }
 
-      // land into pile band when reaching the floor line
-      if (p.y >= fy){
-        landParticle(p);
-        // recycle the falling particle as a new one
-        resetFalling(p);
-      }
+      drawHeart(h.x, h.y, h.s, h.r, h.a);
     }
 
     requestAnimationFrame(tick);
