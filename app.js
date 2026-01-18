@@ -417,8 +417,8 @@ updateAttemptsUI();
   ];
 
   // Soft-luxe tuning (subtle)
-  const MIN_MS = 3500;       // minimum time between spawns
-  const MAX_MS = 7500;       // maximum time between spawns
+  const MIN_MS = 1000;       // minimum time between spawns
+  const MAX_MS = 4000;       // maximum time between spawns
   const MAX_ON_SCREEN = 3;   // keep it classy
   const MIN_SIZE = 64;       // px
   const MAX_SIZE = 140;      // px
