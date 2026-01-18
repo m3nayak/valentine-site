@@ -326,13 +326,13 @@ updateAttemptsUI();
   const COUNT = 75;         // subtle density
   const WIND = 0.30;        // gentle sideways drift
   const COLORS = [
-    "rgba(255, 205, 230, 0.65)", // very light blush
-    "rgba(255, 163, 214, 0.70)", // pastel pink
-    "rgba(255, 105, 180, 0.72)", // hot pink
-    "rgba(255, 20, 147, 0.72)",  // deep pink
-    "rgba(255, 60, 90, 0.70)",   // vivid rose red
-    "rgba(220, 20, 60, 0.68)"    // crimson
-  ];
+  "rgba(255, 230, 240, 0.85)", // blush highlight
+  "rgba(255, 170, 210, 0.88)", // pastel pink
+  "rgba(255, 105, 180, 0.92)", // hot pink
+  "rgba(255, 20, 147, 0.92)",  // deep pink
+  "rgba(255, 45, 85, 0.92)",   // punchy rose-red
+  "rgba(220, 20, 60, 0.92)"    // crimson
+];
   
   const hearts = Array.from({length: COUNT}).map(() => ({
     x: rand(0, W),
@@ -363,9 +363,7 @@ updateAttemptsUI();
     ctx.bezierCurveTo(s*2.15, -s*0.15, s, -s*1.35, 0, -s/2);
     ctx.closePath();
     ctx.fill();
-
     ctx.fillStyle = "rgba(255, 0, 80, 0.16)";
-    ctx.fill();
     ctx.strokeStyle = "rgba(255,255,255,0.12)";
     ctx.lineWidth = 1;
     ctx.stroke();
