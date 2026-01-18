@@ -403,13 +403,14 @@ updateAttemptsUI();
 
   tick();
 })();
+
 (function lipstickKissPopups(){
   const layer = document.getElementById("kissLayer");
   if (!layer) return;
 
   // Put your lipstick kiss image in your repo at this path:
   const KISS_IMG_URLS = [
-    "assets/kiss.png"
+    "kiss.png"
     // If you add more later:
     // "assets/kiss2.png",
     // "assets/kiss3.png",
