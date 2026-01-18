@@ -1,0 +1,197 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>For You ❤️</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <!-- Falling hearts / kisses background -->
+  <canvas id="heartsCanvas" class="heartsCanvas" aria-hidden="true"></canvas>
+
+  <main class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="heart" aria-hidden="true">❤</div>
+        <div>
+          <div class="title">A sealed letter, just for you</div>
+          <div class="subtitle">Answer a few questions. Then unlock the envelope ✉️</div>
+        </div>
+      </div>
+      <div class="meta">UK ↔ US</div>
+    </header>
+
+    <section class="grid card">
+      <!-- LEFT: Unlock Quest -->
+      <aside class="panel">
+        <h2>Unlock Quest 🔒</h2>
+        <p class="lead">
+          These are only for you. When you’re done, you’ll turn our story into one phrase to open the envelope.
+        </p>
+
+        <label for="q1">1) The very first nickname you gave me</label>
+        <input id="q1" autocomplete="off" placeholder="One word" />
+
+        <label for="q2">2) The place where I wished we had our first kiss</label>
+        <input id="q2" autocomplete="off" placeholder="Two words max (we accept Griffith/Griffiths)" />
+
+        <label for="q3">3) The song we both fell in love with and kept playing in Vegas</label>
+        <input id="q3" autocomplete="off" placeholder="One word" />
+
+        <label for="q4">4) Where we first met physically</label>
+        <input id="q4" autocomplete="off" placeholder="Two words max" />
+
+        <label for="q5">5) Which flowers did you gift me on our first physical meet</label>
+        <input id="q5" autocomplete="off" placeholder="Two words (colour + flower)" />
+
+        <div class="recipe">
+          <div class="recipeTitle">How to build the secret phrase</div>
+          <ul>
+            <li><b>Q1:</b> take the <b>first two letters</b></li>
+            <li><b>Q2:</b> take the <b>most common letter</b> in your answer</li>
+            <li><b>Q3:</b> take the <b>first letter</b></li>
+            <li><b>Q5:</b> take the <b>last letter</b> of the colour + then the <b>flower (singular)</b></li>
+            <li><b>Q4:</b> take the <b>first two letters</b> of the airport code</li>
+          </ul>
+          <div class="small">
+            Type that phrase below (lowercase, no spaces).
+          </div>
+        </div>
+
+        <label for="pw">Secret phrase</label>
+        <input id="pw" autocomplete="off" placeholder="e.g. cupidrosela" />
+
+        <div class="row">
+          <button class="primary" id="unlockBtn" type="button">Unlock the envelope</button>
+          <button class="ghost" id="resetBtn" type="button">Reset</button>
+        </div>
+
+        <div class="error" id="errorMsg">Not quite. Try again, my love ❤️</div>
+        <div class="success" id="successMsg">Unlocked ✅ Open the letter →</div>
+
+        <div class="attempts" id="attemptsText" aria-live="polite"></div>
+
+        <!-- Hints appear only after 3 failed attempts -->
+        <div class="hints hidden" id="hintsBox">
+          <div class="hintCard">
+            <b>Hint for Q1</b>
+            <p>One word. The first nickname you ever gave me.</p>
+          </div>
+
+          <div class="hintCard">
+            <b>Hint for Q2</b>
+            <p>Two words. We accept <i>Griffith</i> and <i>Griffiths</i>.</p>
+            <p>For the phrase you’ll use the <b>most common letter</b> in this answer.</p>
+          </div>
+
+          <div class="hintCard">
+            <b>Hint for Q3</b>
+            <p>One word. Vegas song.</p>
+            <p>For the phrase you’ll use the <b>first letter</b>.</p>
+          </div>
+
+          <div class="hintCard">
+            <b>Hint for Q4</b>
+            <p>Two words. It’s an airport.</p>
+            <p>For the phrase you’ll use the <b>first two letters</b> of the airport code.</p>
+          </div>
+
+          <div class="hintCard">
+            <b>Hint for Q5</b>
+            <p>
+              Two words.<br>
+              <b>First word</b> = the <b>colour</b>.<br>
+              <b>Second word</b> = the <b>type of flower</b>.
+            </p>
+          </div>
+        </div>
+
+        <details class="admin">
+          <summary>Admin (you only): generate hash</summary>
+          <p class="small">
+            Use this once: type the <b>correct</b> answers + correct secret phrase,
+            click generate, then paste the SHA-256 into <code>app.js</code>.
+          </p>
+          <button class="ghost" id="genHashBtn" type="button">Generate correct hash</button>
+          <pre class="hashOut" id="hashOut">(hash will appear here)</pre>
+        </details>
+      </aside>
+
+      <!-- RIGHT: Envelope + Letter -->
+      <section class="letterWrap">
+        <div class="revealTitle" id="revealTitle">
+          To my <span>Shaybie</span>, the love of my life, my soulmate, my everything, my jaan
+        </div>
+
+        <div class="envelope" id="envelope" aria-hidden="true">
+          <div class="envBack"></div>
+          <div class="envFlap"></div>
+          <div class="envFront"></div>
+        </div>
+
+        <div class="scroll hidden" id="scroll">
+          <div class="paperNoise" aria-hidden="true"></div>
+
+          <div class="letterHead">
+            <span>To: You</span>
+            <span id="dateStamp"></span>
+          </div>
+
+          <div class="letterBody" id="letterBody">
+My love,
+
+[Paste your letter here. Keep it long if you want — it scrolls beautifully.]
+
+Even though there’s an ocean between us sometimes, I feel you in the smallest moments—
+in songs, in silly thoughts, in the way I catch myself smiling for no reason.
+
+I’m grateful for you. For the calm, the laughter, the comfort.
+For how you make distance feel temporary.
+
+There’s one thing I want to ask you…
+
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="valentine">
+            <b>Will you be my Valentine? 💘</b>
+            <div class="btnRow">
+              <button class="yes" id="yesBtn" type="button">Yes ❤️</button>
+              <button class="no" id="noBtn" type="button">No 😅</button>
+            </div>
+            <div class="answerArea" id="answerArea"></div>
+            <div class="signature" id="sig"></div>
+          </div>
+        </div>
+
+        <div class="lockedOverlay" id="lockedOverlay">
+          <div class="lockedInner">
+            <h3>Locked envelope</h3>
+            <p>Answer the questions. Build the secret phrase. Then unlock ✉️</p>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Netlify form: sends you the YES/NO result -->
+    <form name="valentine-result" netlify netlify-honeypot="bot-field" hidden>
+      <input name="bot-field" />
+      <input type="text" name="choice" />
+      <input type="text" name="timestamp" />
+      <input type="text" name="note" />
+    </form>
+
+    <!-- Full-screen collage overlay -->
+    <div class="collageOverlay" id="collageOverlay" aria-hidden="true">
+      <button class="collageClose" id="collageClose" type="button">Close ✕</button>
+      <div class="collageStage" id="collageStage"></div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
