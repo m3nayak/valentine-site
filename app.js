@@ -400,6 +400,70 @@ updateAttemptsUI();
 
     requestAnimationFrame(tick);
   }
-
-  tick();
-})();
+  /* Lipstick kiss popups (background, once in a while) */
+    (function lipstickKissPopups(){
+      const layer = document.getElementById("kissLayer");
+      if (!layer) return;
+    
+      // Put your lipstick kiss image in your repo at this path:
+      const KISS_IMG_URLS = [
+        "assets/kiss.png"
+        // If you add more later:
+        // "assets/kiss2.png",
+        // "assets/kiss3.png",
+      ];
+    
+      // Soft-luxe tuning (subtle)
+      const MIN_MS = 3500;       // minimum time between spawns
+      const MAX_MS = 7500;       // maximum time between spawns
+      const MAX_ON_SCREEN = 3;   // keep it classy
+      const MIN_SIZE = 64;       // px
+      const MAX_SIZE = 140;      // px
+    
+      function rand(a, b){ return a + Math.random() * (b - a); }
+      function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+    
+      function spawn(){
+        if (layer.childElementCount >= MAX_ON_SCREEN) return;
+    
+        const el = document.createElement("div");
+        el.className = "kissPop";
+    
+        const size = Math.round(rand(MIN_SIZE, MAX_SIZE));
+        const rot = Math.round(rand(-18, 18));
+        const dur = Math.round(rand(4200, 6800)); // ms
+        const op  = rand(0.10, 0.22).toFixed(2);
+    
+        // Keep them away from edges a bit so they feel intentional
+        const margin = 24;
+        const x = Math.round(rand(margin, window.innerWidth - margin - size));
+        const y = Math.round(rand(margin, window.innerHeight - margin - size));
+    
+        el.style.left = `${x}px`;
+        el.style.top = `${y}px`;
+    
+        // CSS variables used by your CSS (we’ll add the CSS next)
+        el.style.setProperty("--size", `${size}px`);
+        el.style.setProperty("--rot", `${rot}deg`);
+        el.style.setProperty("--dur", `${dur}ms`);
+        el.style.setProperty("--op", op);
+        el.style.setProperty("--img", `url("${pick(KISS_IMG_URLS)}")`);
+    
+        layer.appendChild(el);
+    
+        // Remove after animation completes
+        setTimeout(() => el.remove(), dur + 200);
+      }
+    
+      function loop(){
+        spawn();
+        const next = Math.round(rand(MIN_MS, MAX_MS));
+        setTimeout(loop, next);
+      }
+    
+      loop();
+    })();
+    
+    
+      tick();
+    })();
