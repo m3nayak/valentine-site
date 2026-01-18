@@ -303,7 +303,7 @@ envelope.classList.remove("open");
 setUnlocked(false);
 updateAttemptsUI();
 
-(function softLuxeHeartsAndKisses3D(){
+(function softLuxeHeartsAndKisses(){
   const canvas = document.getElementById("heartsCanvas");
   if(!canvas) return;
   const ctx = canvas.getContext("2d");
@@ -323,74 +323,61 @@ updateAttemptsUI();
 
   function rand(a,b){ return a + Math.random() * (b-a); }
   function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
-  function clamp(x,a,b){ return Math.max(a, Math.min(b, x)); }
 
   // --- Tune these ---
-  const HEART_COUNT = 78;
-  const KISS_COUNT  = 20;     // less frequent than hearts
-  const WIND_BASE = 0.26;     // base wobble
+  const HEART_COUNT = 75;
+  const KISS_COUNT  = 10;     // less often than hearts
+  const WIND = 0.30;
 
   const HEART_COLORS = [
-    "rgba(255, 230, 240, 0.90)",
-    "rgba(255, 170, 210, 0.92)",
-    "rgba(255, 105, 180, 0.96)",
-    "rgba(255, 20, 147, 0.96)",
-    "rgba(255, 45, 85, 0.96)",
-    "rgba(220, 20, 60, 0.96)"
+    "rgba(255, 230, 240, 0.85)",
+    "rgba(255, 170, 210, 0.88)",
+    "rgba(255, 105, 180, 0.92)",
+    "rgba(255, 20, 147, 0.92)",
+    "rgba(255, 45, 85, 0.92)",
+    "rgba(220, 20, 60, 0.92)"
   ];
 
-  // Load kiss image (root: kiss.png)
+  // Load kiss image (your file is in repo root as kiss.png)
   const kissImg = new Image();
   kissImg.src = "kiss.png";
   let kissReady = false;
   kissImg.onload = () => { kissReady = true; };
 
-  // Depth helpers:
-  // z in [0..1]: 0 = far, 1 = near
-  // Near objects: bigger, faster, more opaque, sharper
-  function depthScale(z){ return 0.55 + z * 1.05; }            // 0.55..1.60
-  function depthAlpha(z){ return 0.10 + z * 0.26; }            // 0.10..0.36 (then we tweak per type)
-  function depthBlur(z){ return (1 - z) * 2.2; }               // far blur
-  function depthFallSpeed(z){ return 0.20 + z * 1.15; }        // multiplier
-  function depthSideSpeed(z){ return 0.10 + z * 0.65; }        // multiplier
-
+  // Build particles (hearts + kisses)
   const particles = [];
 
-  function makeCommon(){
-    const z = rand(0.10, 1.0); // avoid ultra-far invisibles
+  function makeHeart(){
     return {
+      t: "heart",
       x: rand(0, W),
       y: rand(0, H),
-      z,
-      vx: rand(-0.45, 0.45) * depthSideSpeed(z),
+      s: rand(0.7, 1.6),
+      v: rand(0.35, 1.10),
+      vx: rand(-0.30, 0.30),
       r: rand(-Math.PI, Math.PI),
-      vr: rand(-0.010, 0.010) * (0.4 + z),
-      wob: rand(0.6, 2.4),
-      wobPhase: rand(0, 1000)
-    };
-  }
-
-  function makeHeart(){
-    const c = makeCommon();
-    return {
-      ...c,
-      t: "heart",
-      baseS: rand(0.65, 1.45),     // base size before depth scaling
-      v: rand(0.35, 1.05) * depthFallSpeed(c.z),
-      color: pick(HEART_COLORS),
-      a: depthAlpha(c.z) + 0.05    // a bit stronger than kisses
+      vr: rand(-0.006, 0.006),
+      wob: rand(0.6, 1.6),
+      wobPhase: rand(0, 1000),
+      a: rand(0.20, 0.36),
+      color: pick(HEART_COLORS)
     };
   }
 
   function makeKiss(){
-    const c = makeCommon();
     return {
-      ...c,
       t: "kiss",
-      baseSize: rand(22, 40),      // base kiss size before depth scaling
-      v: rand(0.25, 0.85) * depthFallSpeed(c.z),
-      // kisses are luxe + subtle
-      a: clamp(depthAlpha(c.z) - 0.04, 0.08, 0.22)
+      x: rand(0, W),
+      y: rand(0, H),
+      // kisses slightly larger and floatier
+      size: rand(26, 44),
+      v: rand(0.25, 0.85),
+      vx: rand(-0.55, 0.55),   // move in more varied directions
+      r: rand(-Math.PI, Math.PI),
+      vr: rand(-0.010, 0.010),
+      wob: rand(0.8, 2.2),
+      wobPhase: rand(0, 1000),
+      a: rand(0.12, 0.22)      // keep subtle / luxe
     };
   }
 
@@ -401,25 +388,19 @@ updateAttemptsUI();
     ctx.save();
     ctx.translate(h.x, h.y);
     ctx.rotate(h.r);
-
-    const s3d = h.baseS * depthScale(h.z);
-    ctx.globalAlpha = clamp(h.a, 0.10, 0.45);
-
-    // 3D feel: far = slightly blurrier
-    ctx.filter = `blur(${depthBlur(h.z)}px)`;
+    ctx.globalAlpha = h.a;
 
     ctx.fillStyle = h.color;
     ctx.beginPath();
-    const s = 10 * s3d;
+    const s = 10 * h.s;
     ctx.moveTo(0, -s/2);
     ctx.bezierCurveTo(-s, -s*1.35, -s*2.15, -s*0.15, 0, s*1.65);
     ctx.bezierCurveTo(s*2.15, -s*0.15, s, -s*1.35, 0, -s/2);
     ctx.closePath();
     ctx.fill();
 
-    // near hearts get a crisper highlight
-    const edge = 0.08 + h.z * 0.12;
-    ctx.strokeStyle = `rgba(255,255,255,${edge.toFixed(3)})`;
+    // edge highlight helps pop
+    ctx.strokeStyle = "rgba(255,255,255,0.14)";
     ctx.lineWidth = 1;
     ctx.stroke();
 
@@ -431,17 +412,13 @@ updateAttemptsUI();
     ctx.save();
     ctx.translate(k.x, k.y);
     ctx.rotate(k.r);
+    ctx.globalAlpha = k.a;
 
-    // size + opacity based on depth
-    const scale = depthScale(k.z);
-    const w = (k.baseSize * 1.65) * scale;
-    const h = (k.baseSize * 1.00) * scale;
-
-    ctx.globalAlpha = clamp(k.a, 0.08, 0.28);
-    ctx.filter = `blur(${depthBlur(k.z)}px)`;
-
-    // a subtle “ink” vibe: far kisses blend more
-    // (no blend mode needed; canvas filter + alpha gives a clean look)
+    // soft “ink” look
+    ctx.globalCompositeOperation = "source-over";
+    // draw centered
+    const w = k.size * 1.6;
+    const h = k.size;
     ctx.drawImage(kissImg, -w/2, -h/2, w, h);
 
     ctx.restore();
@@ -449,44 +426,41 @@ updateAttemptsUI();
 
   function reset(p){
     p.x = rand(0, W);
-    p.y = rand(-100, -20);
-    p.z = rand(0.10, 1.0);
-    p.vx = rand(-0.45, 0.45) * depthSideSpeed(p.z);
-    p.r = rand(-Math.PI, Math.PI);
-    p.vr = rand(-0.010, 0.010) * (0.4 + p.z);
-    p.wob = rand(0.6, 2.4);
-    p.wobPhase = rand(0, 1000);
+    p.y = rand(-80, -20);
 
     if(p.t === "heart"){
-      p.baseS = rand(0.65, 1.45);
-      p.v = rand(0.35, 1.05) * depthFallSpeed(p.z);
+      p.s = rand(0.7, 1.6);
+      p.v = rand(0.35, 1.10);
+      p.vx = rand(-0.30, 0.30);
+      p.a = rand(0.20, 0.36);
       p.color = pick(HEART_COLORS);
-      p.a = depthAlpha(p.z) + 0.05;
+      p.r = rand(-Math.PI, Math.PI);
     } else {
-      p.baseSize = rand(22, 40);
-      p.v = rand(0.25, 0.85) * depthFallSpeed(p.z);
-      p.a = clamp(depthAlpha(p.z) - 0.04, 0.08, 0.22);
+      p.size = rand(26, 44);
+      p.v = rand(0.25, 0.85);
+      p.vx = rand(-0.55, 0.55);
+      p.a = rand(0.12, 0.22);
+      p.r = rand(-Math.PI, Math.PI);
     }
   }
 
   function tick(){
     ctx.clearRect(0,0,W,H);
 
-    // draw far -> near so near particles appear on top (more 3D)
-    const sorted = particles.slice().sort((a,b) => a.z - b.z);
-
-    for(const p of sorted){
+    for(const p of particles){
       p.wobPhase += 0.012 * p.wob;
-      const drift = Math.sin(p.wobPhase) * WIND_BASE * depthSideSpeed(p.z);
+      const drift = Math.sin(p.wobPhase) * WIND;
 
+      // hearts + kisses use the same “engine”
       p.x += p.vx + drift;
       p.y += p.v;
       p.r += p.vr;
 
-      if(p.x < -120) p.x = W + 120;
-      if(p.x > W + 120) p.x = -120;
+      // wrap
+      if(p.x < -80) p.x = W + 80;
+      if(p.x > W + 80) p.x = -80;
 
-      if(p.y > H + 140){
+      if(p.y > H + 90){
         reset(p);
       }
 
@@ -496,6 +470,9 @@ updateAttemptsUI();
 
     requestAnimationFrame(tick);
   }
+
+  tick();
+})();
 
   tick();
 })();
