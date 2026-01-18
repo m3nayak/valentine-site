@@ -222,38 +222,33 @@ button{
   background-position: center;
 
   opacity: 0;
-  transform: translateY(18px) rotate(var(--rot)) scale(0.75);
+  transform: rotate(var(--rot)) scale(0.88);
   transform-origin: center;
 
   mix-blend-mode: multiply;
-  filter: saturate(1.18) contrast(1.06);
+  filter: saturate(1.15) contrast(1.05);
 
-  animation: kissMwah var(--dur) cubic-bezier(.2,.9,.2,1) forwards;
+  animation: kissMwah var(--dur) cubic-bezier(.25,.9,.3,1) forwards;
 }
 
 /* fade in → gentle float → fade out */
 
-/* “mwah” motion: pop in → tiny kiss bounce → float away */
 @keyframes kissMwah{
   0%{
     opacity: 0;
-    transform: translateY(18px) rotate(var(--rot)) scale(0.70);
+    transform: rotate(var(--rot)) scale(0.88);
   }
-  12%{
+  20%{
     opacity: var(--op);
-    transform: translateY(6px) rotate(calc(var(--rot) - 7deg)) scale(1.12);
+    transform: rotate(var(--rot)) scale(1.02);
   }
-  22%{
-    opacity: var(--op);
-    transform: translateY(10px) rotate(calc(var(--rot) + 4deg)) scale(0.98);
-  }
-  45%{
+  55%{
     opacity: calc(var(--op) * 0.95);
-    transform: translateY(-2px) rotate(var(--rot)) scale(1.06);
+    transform: rotate(var(--rot)) scale(1.10);
   }
   100%{
     opacity: 0;
-    transform: translateY(-40px) rotate(calc(var(--rot) + 2deg)) scale(1.10);
+    transform: rotate(var(--rot)) scale(1.14);
   }
 }
 
