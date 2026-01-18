@@ -34,7 +34,7 @@ body{
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: .55;
+  opacity: .80;
 }
 .wrap{
   width: min(1040px, 100%);
@@ -222,7 +222,7 @@ button{
   background-position: center;
 
   opacity: 0;
-  transform: translateY(16px) rotate(var(--rot)) scale(0.85);
+  transform: translateY(18px) rotate(var(--rot)) scale(0.75);
   transform-origin: center;
 
   mix-blend-mode: multiply;
@@ -237,23 +237,23 @@ button{
 @keyframes kissMwah{
   0%{
     opacity: 0;
-    transform: translateY(16px) rotate(var(--rot)) scale(0.80);
+    transform: translateY(18px) rotate(var(--rot)) scale(0.70);
   }
   12%{
     opacity: var(--op);
-    transform: translateY(6px) rotate(calc(var(--rot) - 6deg)) scale(1.10);
+    transform: translateY(6px) rotate(calc(var(--rot) - 7deg)) scale(1.12);
   }
   22%{
     opacity: var(--op);
     transform: translateY(10px) rotate(calc(var(--rot) + 4deg)) scale(0.98);
   }
   45%{
-    opacity: calc(var(--op) * 0.92);
-    transform: translateY(-4px) rotate(var(--rot)) scale(1.04);
+    opacity: calc(var(--op) * 0.95);
+    transform: translateY(-2px) rotate(var(--rot)) scale(1.06);
   }
   100%{
     opacity: 0;
-    transform: translateY(-34px) rotate(calc(var(--rot) + 2deg)) scale(1.10);
+    transform: translateY(-40px) rotate(calc(var(--rot) + 2deg)) scale(1.10);
   }
 }
 
