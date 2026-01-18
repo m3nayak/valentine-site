@@ -407,15 +407,15 @@ updateAttemptsUI();
     
       // Put your lipstick kiss image in your repo at this path:
       const KISS_IMG_URLS = [
-        "assets/kiss.png"
+        "kiss.png"
         // If you add more later:
         // "assets/kiss2.png",
         // "assets/kiss3.png",
       ];
     
       // Soft-luxe tuning (subtle)
-      const MIN_MS = 3500;       // minimum time between spawns
-      const MAX_MS = 7500;       // maximum time between spawns
+      const MIN_MS = 1200;       // minimum time between spawns
+      const MAX_MS = 2500;       // maximum time between spawns
       const MAX_ON_SCREEN = 3;   // keep it classy
       const MIN_SIZE = 64;       // px
       const MAX_SIZE = 140;      // px
