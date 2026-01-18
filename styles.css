@@ -399,3 +399,7 @@ button{
 @keyframes popIn{
   to { opacity: 1; transform: rotate(var(--r)) scale(1); }
 }
+
+form[name="valentine-result"]{
+  display:none;
+}
