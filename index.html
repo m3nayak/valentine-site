@@ -1,70 +1,201 @@
-<!DOCTYPE html>
+<!-- index.html -->
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Secret Love Letter</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>To my handsome Shaybie ❤️</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
+  <!-- Falling hearts background -->
+  <canvas id="heartsCanvas" class="heartsCanvas" aria-hidden="true"></canvas>
 
-<div class="scene">
+  <!-- Lipstick kiss popups background layer (JS will inject items here) -->
+  <div id="kissLayer" class="kissLayer" aria-hidden="true"></div>
 
-  <!-- LEFT: ENVELOPE -->
-  <div class="envelope-container">
-    <div class="envelope" id="envelope">
+  <main class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="heart" aria-hidden="true">❤</div>
+        <div>
+          <div class="title">A sealed letter, just for you</div>
+          <div class="subtitle">Answer a few questions. Then unlock the envelope ✉️</div>
+        </div>
+      </div>
+      <div class="meta">UK ↔ US</div>
+    </header>
 
-      <!-- FLAP -->
-      <div class="flap"></div>
+    <section class="grid card">
+      <!-- LEFT: Unlock Quest -->
+      <aside class="panel">
+  <h2>Unlock Quest 🔒</h2>
 
-      <!-- LETTER (slides out physically) -->
-      <div class="letter" id="letter">
-        <h1>My Love ❤️</h1>
-        <p>
-          You unlocked this letter with care, patience,
-          and all the right answers.
-          <br><br>
-          I love you more than words can say.
-        </p>
+  <p class="lead" id="questIntro">
+    To open the envelope and read what’s inside, you’ll answer a few questions about us.
+    When you’re done, you’ll use your answers to build the secret phrase ✨
+  </p>
+
+  <div class="questLayout">
+    <!-- Left: Envelope visual -->
+    <div class="questLeft" aria-hidden="true">
+      <div class="questEnvelope" id="questEnvelope">
+        <div class="envHint">Tap to begin 💌</div>
+      </div>
+    </div>
+
+    <!-- Right: One question at a time -->
+    <div class="questRight">
+      <div class="questCard" id="questCard">
+        <div class="questTop">
+          <div class="questProgress" id="questProgress">Question 1 of 5</div>
+          <div class="questDots" id="questDots" aria-hidden="true"></div>
+        </div>
+
+        <div class="questQ" id="questQText">—</div>
+        <input id="questInput" autocomplete="off" placeholder="Type your answer…" />
+        <div class="questHint hidden" id="questHint"></div>
+
+        <div class="row">
+          <button class="primary" id="questNextBtn" type="button">Submit</button>
+          <button class="ghost" id="questResetBtn" type="button">Start over</button>
+        </div>
+
+        <div class="error" id="questError">Not quite, my love ❤️ Try again.</div>
+        <div class="success" id="questOk">Perfect ✅</div>
       </div>
 
-      <!-- BODY -->
-      <div class="body"></div>
+      <!-- After wizard finishes, show your existing recipe + secret phrase input -->
+      <div class="questDone hidden" id="questDone">
+        <div class="recipe">
+          <div class="recipeTitle">Now build the secret phrase</div>
+          <ul>
+            <li><b>Q1:</b> take the <b>first two letters</b></li>
+            <li><b>Q2:</b> take the <b>most common letter</b> in your answer</li>
+            <li><b>Q3:</b> take the <b>first letter</b></li>
+            <li><b>Q5:</b> take the <b>last letter</b> of the colour + then the <b>flower (singular)</b></li>
+            <li><b>Q4:</b> take the <b>first two letters</b> of the airport code</li>
+          </ul>
+          <div class="small">Type that phrase below (lowercase, no spaces).</div>
+        </div>
 
-      <!-- WAX SEAL -->
-      <div class="wax-seal" id="seal">
-        <span class="seal-left">❤️</span>
-        <span class="seal-right">❤️</span>
-        <span class="crack"></span>
+        <label for="pw">Secret phrase</label>
+        <input id="pw" autocomplete="off" placeholder="e.g. cupidrosela" />
+
+        <div class="row">
+          <button class="primary" id="unlockBtn" type="button">Unlock the envelope</button>
+          <button class="ghost" id="resetBtn" type="button">Reset</button>
+        </div>
+
+        <div class="error" id="errorMsg">Not quite. Try again, my love ❤️</div>
+        <div class="success" id="successMsg">Unlocked ✅ Open the letter →</div>
+
+        <div class="attempts" id="attemptsText" aria-live="polite"></div>
+
+        <div class="hints hidden" id="hintsBox">
+          <!-- keep your existing hint cards here if you want -->
+        </div>
       </div>
-
     </div>
   </div>
 
-  <!-- RIGHT: QUESTIONS -->
-  <div class="questions-container">
-    <p id="intro">
-      To open the envelope and read the contents,
-      you must answer a series of questions.
-      Each correct answer builds the password.
+  <!-- Keep your Admin hash generator (optional) -->
+  <details class="admin">
+    <summary>Admin (you only): generate hash</summary>
+    <p class="small">
+      Use this once: type the correct phrase, click generate, then paste SHA-256 into <code>app.js</code>.
     </p>
+    <button class="ghost" id="genHashBtn" type="button">Generate correct hash</button>
+    <pre class="hashOut" id="hashOut">(hash will appear here)</pre>
+  </details>
+</aside>
 
-    <h2 id="question"></h2>
+      <!-- RIGHT: Envelope + Letter -->
+      <section class="letterWrap">
+        <div class="revealTitle" id="revealTitle">
+          To my <span>Shaybie</span>, the love of my life, my soulmate, my everything, my jaan
+        </div>
 
-    <input
-      type="text"
-      id="answer"
-      placeholder="Your answer..."
-      autocomplete="off"
-    />
+        <div class="envelope" id="envelope" aria-hidden="true">
+          <div class="envBack"></div>
+          <div class="envFlap"></div>
+          <div class="envFront"></div>
+        </div>
 
-    <button onclick="submitAnswer()">Submit</button>
-  </div>
+        <div class="scroll hidden" id="scroll">
+          <div class="paperNoise" aria-hidden="true"></div>
 
-</div>
+          <div class="letterHead">
+            <span>To: You</span>
+            <span id="dateStamp"></span>
+          </div>
 
-<!-- HEART EXPLOSION -->
-<div class="heart-burst" id="heartBurst"></div>
-<script src="app.js"></script>
-<script src="envelope.js"></script>
+          <div class="letterBody" id="letterBody">
+My love,
+
+[Paste your letter here. Keep it long if you want — it scrolls beautifully.]
+
+Even though there’s an ocean between us sometimes, I feel you in the smallest moments—
+in songs, in silly thoughts, in the way I catch myself smiling for no reason.
+
+I’m grateful for you. For the calm, the laughter, the comfort.
+For how you make distance feel temporary.
+
+There’s one thing I want to ask you…
+
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="valentine">
+            <b>Will you be my Valentine? 💘</b>
+            <div class="btnRow">
+              <button class="yes" id="yesBtn" type="button">Yes ❤️</button>
+              <button class="no" id="noBtn" type="button">No 😅</button>
+            </div>
+            <div class="answerArea" id="answerArea"></div>
+            <div class="signature" id="sig"></div>
+          </div>
+        </div>
+
+        <div class="lockedOverlay" id="lockedOverlay">
+          <div class="lockedInner">
+            <h3>Locked envelope</h3>
+            <p>Answer the questions. Build the secret phrase. Then unlock ✉️</p>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Netlify form: captures his final answer -->
+    <form
+      name="valentine-result"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+    >
+      <input type="hidden" name="form-name" value="valentine-result" />
+      <p style="display:none;">
+        <label>
+          Don’t fill this out:
+          <input name="bot-field" />
+        </label>
+      </p>
+
+      <!-- These inputs will be filled & submitted by JS -->
+      <input type="text" name="choice" />
+      <input type="text" name="timestamp" />
+      <input type="text" name="note" />
+    </form>
+
+    <!-- Full-screen collage overlay -->
+    <div class="collageOverlay" id="collageOverlay" aria-hidden="true">
+      <button class="collageClose" id="collageClose" type="button">Close ✕</button>
+      <div class="collageStage" id="collageStage"></div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
 </body>
 </html>
