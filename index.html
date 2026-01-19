@@ -1,200 +1,197 @@
-<!-- index.html -->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>To my handsome Shaybie ❤️</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Secret Love Letter</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <!-- Falling hearts background -->
-  <canvas id="heartsCanvas" class="heartsCanvas" aria-hidden="true"></canvas>
+  <!-- BACKGROUND LAYERS (required by app.js) -->
+  <canvas id="heartsCanvas"></canvas>
+  <div id="kissLayer"></div>
 
-  <!-- Lipstick kiss popups background layer (JS will inject items here) -->
-  <div id="kissLayer" class="kissLayer" aria-hidden="true"></div>
+  <!-- FULLSCREEN FX LAYER -->
+  <div class="heart-burst" id="heartBurst" aria-hidden="true"></div>
 
-  <main class="wrap">
-    <header class="topbar">
-      <div class="brand">
-        <div class="heart" aria-hidden="true">❤</div>
-        <div>
-          <div class="title">A sealed letter, just for you</div>
-          <div class="subtitle">Answer a few questions. Then unlock the envelope ✉️</div>
-        </div>
-      </div>
-      <div class="meta">UK ↔ US</div>
-    </header>
+  <main class="scene">
+    <!-- LEFT: ENVELOPE AREA -->
+    <section class="leftPane">
+      <div class="stage">
+        <!-- QUEST ENVELOPE (wizard trigger / visual) -->
+        <button id="questEnvelope" class="questEnvelope" type="button" aria-label="Open questions">
+          <span class="questEnvInner">
+            <span class="questEnvStamp">💌</span>
+            <span class="questEnvText">Open</span>
+          </span>
+        </button>
 
-    <section class="grid card">
-      <!-- LEFT: Unlock Quest -->
-      <aside class="panel">
-  <h2>Unlock Quest 🔒</h2>
+        <!-- MAIN ENVELOPE + LETTER -->
+        <div id="envelope" class="envelope" aria-label="Envelope">
+          <div class="envShadow" aria-hidden="true"></div>
 
-  <p class="lead" id="questIntro">
-    To open the envelope and read what’s inside, you’ll answer a few questions about us.
-    When you’re done, you’ll use your answers to build the secret phrase ✨
-  </p>
+          <div class="envBack" aria-hidden="true"></div>
 
-  <div class="questLayout">
-    <!-- Left: Envelope visual -->
-    <div class="questLeft" aria-hidden="true">
-      <div class="questEnvelope" id="questEnvelope">
-        <div class="envHint">Tap to begin 💌</div>
-      </div>
-    </div>
+          <div class="envFlap" aria-hidden="true"></div>
 
-    <!-- Right: One question at a time -->
-    <div class="questRight">
-      <div class="questCard" id="questCard">
-        <div class="questTop">
-          <div class="questProgress" id="questProgress">Question 1 of 5</div>
-          <div class="questDots" id="questDots" aria-hidden="true"></div>
-        </div>
+          <!-- LETTER WRAP (app.js expects .letterWrap and toggles .unlocked) -->
+          <div class="letterWrap">
+            <div class="letterPaper">
+              <div class="letterHeader">
+                <div id="revealTitle" class="revealTitle">A little letter…</div>
+                <div class="metaRow">
+                  <span id="dateStamp" class="dateStamp"></span>
+                </div>
+              </div>
 
-        <div class="questQ" id="questQText">—</div>
-        <input id="questInput" autocomplete="off" placeholder="Type your answer…" />
-        <div class="questHint hidden" id="questHint"></div>
+              <!-- SCROLL (app.js hides/unhides #scroll) -->
+              <div id="scroll" class="scroll hidden">
+                <p>
+                  Hi my love ❤️
+                  <br><br>
+                  If you’re reading this, you cracked the code — literally.
+                  <br><br>
+                  I made this for you with all the pink-red-heart energy I could summon.
+                  <br><br>
+                  Will you be my Valentine?
+                </p>
 
-        <div class="row">
-          <button class="primary" id="questNextBtn" type="button">Submit</button>
-          <button class="ghost" id="questResetBtn" type="button">Start over</button>
-        </div>
+                <div class="choiceRow">
+                  <button id="yesBtn" class="btn btnYes" type="button">YES 💘</button>
+                  <button id="noBtn" class="btn btnNo" type="button">NO 😌</button>
+                </div>
 
-        <div class="error" id="questError">Not quite, my love ❤️ Try again.</div>
-        <div class="success" id="questOk">Perfect ✅</div>
-      </div>
+                <div id="answerArea" class="answerArea"></div>
 
-      <!-- After wizard finishes, show your existing recipe + secret phrase input -->
-      <div class="questDone hidden" id="questDone">
-        <div class="recipe">
-          <div class="recipeTitle">Now build the secret phrase</div>
-          <ul>
-            <li><b>Q1:</b> take the <b>first two letters</b></li>
-            <li><b>Q2:</b> take the <b>most common letter</b> in your answer</li>
-            <li><b>Q3:</b> take the <b>first letter</b></li>
-            <li><b>Q5:</b> take the <b>last letter</b> of the colour + then the <b>flower (singular)</b></li>
-            <li><b>Q4:</b> take the <b>first two letters</b> of the airport code</li>
-          </ul>
-          <div class="small">Type that phrase below (lowercase, no spaces).</div>
-        </div>
-
-        <label for="pw">Secret phrase</label>
-        <input id="pw" autocomplete="off" placeholder="e.g. cupidrosela" />
-
-        <div class="row">
-          <button class="primary" id="unlockBtn" type="button">Unlock the envelope</button>
-          <button class="ghost" id="resetBtn" type="button">Reset</button>
-        </div>
-
-        <div class="error" id="errorMsg">Not quite. Try again, my love ❤️</div>
-        <div class="success" id="successMsg">Unlocked ✅ Open the letter →</div>
-
-        <div class="attempts" id="attemptsText" aria-live="polite"></div>
-
-        <div class="hints hidden" id="hintsBox">
-          <!-- keep your existing hint cards here if you want -->
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Keep your Admin hash generator (optional) -->
-  <details class="admin">
-    <summary>Admin (you only): generate hash</summary>
-    <p class="small">
-      Use this once: type the correct phrase, click generate, then paste SHA-256 into <code>app.js</code>.
-    </p>
-    <button class="ghost" id="genHashBtn" type="button">Generate correct hash</button>
-    <pre class="hashOut" id="hashOut">(hash will appear here)</pre>
-  </details>
-</aside>
-
-      <!-- RIGHT: Envelope + Letter -->
-      <section class="letterWrap">
-        <div class="revealTitle" id="revealTitle">
-          To my <span>Shaybie</span>, the love of my life, my soulmate, my everything, my jaan
-        </div>
-
-        <div class="envelope" id="envelope" aria-hidden="true">
-          <div class="envBack"></div>
-          <div class="envFlap"></div>
-          <div class="envFront"></div>
-        </div>
-
-        <div class="scroll hidden" id="scroll">
-          <div class="paperNoise" aria-hidden="true"></div>
-
-          <div class="letterHead">
-            <span>To: You</span>
-            <span id="dateStamp"></span>
-          </div>
-
-          <div class="letterBody" id="letterBody">
-My love,
-
-[Paste your letter here. Keep it long if you want — it scrolls beautifully.]
-
-Even though there’s an ocean between us sometimes, I feel you in the smallest moments—
-in songs, in silly thoughts, in the way I catch myself smiling for no reason.
-
-I’m grateful for you. For the calm, the laughter, the comfort.
-For how you make distance feel temporary.
-
-There’s one thing I want to ask you…
-
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="valentine">
-            <b>Will you be my Valentine? 💘</b>
-            <div class="btnRow">
-              <button class="yes" id="yesBtn" type="button">Yes ❤️</button>
-              <button class="no" id="noBtn" type="button">No 😅</button>
+                <div class="sigRow">
+                  <div id="sig" class="sig"></div>
+                </div>
+              </div>
             </div>
-            <div class="answerArea" id="answerArea"></div>
-            <div class="signature" id="sig"></div>
           </div>
-        </div>
 
-        <div class="lockedOverlay" id="lockedOverlay">
-          <div class="lockedInner">
-            <h3>Locked envelope</h3>
-            <p>Answer the questions. Build the secret phrase. Then unlock ✉️</p>
+          <!-- FRONT PANEL -->
+          <div class="envFront" aria-hidden="true"></div>
+
+          <!-- NEW: WAX SEAL (needed for crack FX + heart burst) -->
+          <div class="wax-seal" id="seal" aria-hidden="true">
+            <span class="seal-left">❤️</span>
+            <span class="seal-right">❤️</span>
+            <span class="crack"></span>
           </div>
         </div>
-      </section>
+      </div>
     </section>
 
-    <!-- Netlify form: captures his final answer -->
-    <form
-      name="valentine-result"
-      method="POST"
-      data-netlify="true"
-      netlify-honeypot="bot-field"
-    >
-      <input type="hidden" name="form-name" value="valentine-result" />
-      <p style="display:none;">
-        <label>
-          Don’t fill this out:
-          <input name="bot-field" />
-        </label>
-      </p>
+    <!-- RIGHT: QUESTIONS / UNLOCK AREA -->
+    <section class="rightPane">
+      <div class="card">
+        <h1 class="title">Secret Envelope</h1>
+        <p class="subtitle">
+          To open the envelope and read the content, answer the questions and build the password.
+        </p>
 
-      <!-- These inputs will be filled & submitted by JS -->
-      <input type="text" name="choice" />
-      <input type="text" name="timestamp" />
-      <input type="text" name="note" />
-    </form>
+        <!-- WIZARD CARD (app.js expects these IDs) -->
+        <div id="questCard" class="questCard">
+          <div class="questTop">
+            <div id="questProgress" class="questProgress">Question 1 of 5</div>
+            <div id="questDots" class="questDots" aria-hidden="true"></div>
+          </div>
 
-    <!-- Full-screen collage overlay -->
-    <div class="collageOverlay" id="collageOverlay" aria-hidden="true">
-      <button class="collageClose" id="collageClose" type="button">Close ✕</button>
-      <div class="collageStage" id="collageStage"></div>
-    </div>
+          <div id="questQText" class="questQText">Question text</div>
+
+          <input
+            id="questInput"
+            class="input"
+            type="text"
+            placeholder="Type here…"
+            autocomplete="off"
+          />
+
+          <div class="questActions">
+            <button id="questNextBtn" class="btn btnPrimary" type="button">Submit</button>
+            <button id="questResetBtn" class="btn btnGhost" type="button">Restart</button>
+          </div>
+
+          <div id="questOk" class="note ok" style="display:none;">Correct 💖</div>
+          <div id="questError" class="note err" style="display:none;">Not quite — try again.</div>
+
+          <div id="questHint" class="hint hidden"></div>
+        </div>
+
+        <!-- DONE STATE -->
+        <div id="questDone" class="questDone hidden">
+          <div class="doneTitle">All questions complete ✨</div>
+          <p class="doneText">
+            Now type the password to break the seal and open the letter.
+          </p>
+        </div>
+
+        <!-- LOCKED OVERLAY / PASSWORD SECTION (app.js expects these IDs) -->
+        <div id="lockedOverlay" class="lockedOverlay">
+          <div class="lockBox">
+            <div class="lockTitle">Unlock the Envelope</div>
+            <div class="lockSub">
+              Enter the password you built from your answers.
+            </div>
+
+            <!-- Hidden legacy inputs (app.js references q1..q5) -->
+            <input id="q1" class="hidden" />
+            <input id="q2" class="hidden" />
+            <input id="q3" class="hidden" />
+            <input id="q4" class="hidden" />
+            <input id="q5" class="hidden" />
+
+            <input
+              id="pw"
+              class="input"
+              type="password"
+              placeholder="Password…"
+              autocomplete="off"
+            />
+
+            <div class="row">
+              <button id="unlockBtn" class="btn btnPrimary" type="button">Unlock</button>
+              <button id="resetBtn" class="btn btnGhost" type="button">Reset</button>
+            </div>
+
+            <div id="successMsg" class="note ok" style="display:none;">
+              Unlocked 💘
+            </div>
+            <div id="errorMsg" class="note err" style="display:none;">
+              That’s not it — try again.
+            </div>
+
+            <div id="attemptsText" class="attemptsText"></div>
+
+            <div id="hintsBox" class="hintsBox hidden">
+              <div class="hintTitle">Hints</div>
+              <ul>
+                <li>Make sure spelling matches what you typed in the questions.</li>
+                <li>Try no spaces / no punctuation.</li>
+                <li>If you used the admin panel, paste the correct SHA hash into app.js.</li>
+              </ul>
+            </div>
+
+            <!-- Admin hash tool (app.js expects these IDs) -->
+            <div class="adminBox">
+              <button id="genHashBtn" class="btn btnTiny" type="button">Admin: Generate Hash</button>
+              <pre id="hashOut" class="hashOut"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <!-- COLLAGE OVERLAY (app.js expects these IDs) -->
+  <div id="collageOverlay" class="collageOverlay">
+    <div class="collagePanel">
+      <button id="collageClose" class="collageClose" type="button">✕</button>
+      <div id="collageStage" class="collageStage"></div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
   <script src="envelope.js"></script>
