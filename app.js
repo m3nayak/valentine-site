@@ -686,3 +686,11 @@ questCard?.classList.remove("hidden");
 questDone?.classList.add("hidden");
 renderDots();
 showQuestion();
+
+// ---- DEV ONLY: helper to generate hashes in console ----
+window.hashMe = async function (s) {
+  const clean = lettersOnly(s);
+  const hash = await sha256Hex(clean);
+  console.log("Input:", clean);
+  console.log("SHA-256:", hash);
+};
