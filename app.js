@@ -466,3 +466,200 @@ updateAttemptsUI();
 
   loop();
 })();
+
+// ---- Wizard (one-by-one questions) ----
+const questEnvelope = document.getElementById("questEnvelope");
+const questCard = document.getElementById("questCard");
+const questProgress = document.getElementById("questProgress");
+const questDots = document.getElementById("questDots");
+const questQText = document.getElementById("questQText");
+const questInput = document.getElementById("questInput");
+const questHint = document.getElementById("questHint");
+const questNextBtn = document.getElementById("questNextBtn");
+const questResetBtn = document.getElementById("questResetBtn");
+const questError = document.getElementById("questError");
+const questOk = document.getElementById("questOk");
+const questDone = document.getElementById("questDone");
+
+// IMPORTANT: hashes are for correctness without storing plain answers.
+// You can generate these once (I’ll show you how right after).
+const ANSWER_HASHES = {
+  q1: [
+    /* sha256Hex("cuddles") */
+  ],
+  q2: [
+    /* sha256Hex("griffith observatory"), sha256Hex("griffiths observatory") */
+  ],
+  q3: [
+    /* sha256Hex("perfect") */
+  ],
+  q4: [
+    /* sha256Hex("lax airport"), sha256Hex("lax") */
+  ],
+  q5: [
+    /* sha256Hex("red roses") */
+  ],
+};
+
+const WIZARD = [
+  {
+    key: "q1",
+    label: "1) The very first nickname you gave me",
+    placeholder: "Hint: one word",
+    hint: "One word. The first nickname you ever gave me."
+  },
+  {
+    key: "q2",
+    label: "2) The place where I wished we had our first kiss",
+    placeholder: "Hint: two words",
+    hint: "Two words. We accept Griffith / Griffiths (Observatory)."
+  },
+  {
+    key: "q3",
+    label: "3) The song we both fell in love with and kept playing in Vegas",
+    placeholder: "Hint: one word",
+    hint: "One word. Vegas song."
+  },
+  {
+    key: "q4",
+    label: "4) Where we first met physically",
+    placeholder: "Hint: airport name",
+    hint: "It’s an airport. (Think code too.)"
+  },
+  {
+    key: "q5",
+    label: "5) Which flowers did you gift me on our first physical meet",
+    placeholder: "Hint: two words",
+    hint: "Two words. First = colour, second = flower type."
+  }
+];
+
+let wizardIndex = 0;
+let wizardTries = 0;
+const wizardAnswers = { q1:"", q2:"", q3:"", q4:"", q5:"" };
+
+function renderDots(){
+  if (!questDots) return;
+  questDots.innerHTML = "";
+  WIZARD.forEach((_, i) => {
+    const s = document.createElement("span");
+    if (i <= wizardIndex) s.classList.add("on");
+    questDots.appendChild(s);
+  });
+}
+
+function showQuestion(){
+  const step = WIZARD[wizardIndex];
+  questProgress.textContent = `Question ${wizardIndex + 1} of ${WIZARD.length}`;
+  questQText.textContent = step.label;
+  questInput.value = "";
+  questInput.placeholder = step.placeholder;
+
+  questError.style.display = "none";
+  questOk.style.display = "none";
+
+  wizardTries = 0;
+  questHint.classList.add("hidden");
+  questHint.textContent = step.hint;
+
+  renderDots();
+  questInput.focus();
+}
+
+function showDone(){
+  questCard.classList.add("hidden");
+  questDone.classList.remove("hidden");
+
+  // also copy answers into your existing q1..q5 inputs
+  // so your derivedPhraseFromAnswers() still works.
+  q1.value = wizardAnswers.q1;
+  q2.value = wizardAnswers.q2;
+  q3.value = wizardAnswers.q3;
+  q4.value = wizardAnswers.q4;
+  q5.value = wizardAnswers.q5;
+}
+
+async function isCorrectAnswer(key, typed){
+  const norm = lettersOnly(typed); // your helper; keeps spaces
+  const hash = await sha256Hex(norm);
+  const okList = ANSWER_HASHES[key] || [];
+  return okList.includes(hash);
+}
+
+async function submitWizard(){
+  const step = WIZARD[wizardIndex];
+  const typed = questInput.value;
+
+  questError.style.display = "none";
+  questOk.style.display = "none";
+
+  // empty guard
+  if (!typed.trim()){
+    questError.style.display = "block";
+    questCard.classList.add("shake");
+    setTimeout(()=>questCard.classList.remove("shake"), 450);
+    return;
+  }
+
+  const ok = await isCorrectAnswer(step.key, typed);
+
+  if (!ok){
+    wizardTries++;
+    questError.style.display = "block";
+    questCard.classList.add("shake");
+    setTimeout(()=>questCard.classList.remove("shake"), 450);
+
+    if (wizardTries >= 3){
+      questHint.classList.remove("hidden"); // hints after 3 tries
+    }
+    return;
+  }
+
+  // correct
+  questOk.style.display = "block";
+  wizardAnswers[step.key] = typed;
+
+  setTimeout(() => {
+    wizardIndex++;
+    if (wizardIndex >= WIZARD.length){
+      showDone();
+    } else {
+      showQuestion();
+    }
+  }, 550);
+}
+
+function resetWizard(){
+  wizardIndex = 0;
+  wizardTries = 0;
+  Object.keys(wizardAnswers).forEach(k => wizardAnswers[k] = "");
+
+  questDone.classList.add("hidden");
+  questCard.classList.remove("hidden");
+  showQuestion();
+}
+
+// Start wizard on envelope click, or immediately if you prefer
+questEnvelope?.addEventListener("click", resetWizard);
+questNextBtn?.addEventListener("click", submitWizard);
+questResetBtn?.addEventListener("click", resetWizard);
+questInput?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") submitWizard();
+});
+
+// Start in a “waiting” state until he clicks the envelope
+questCard?.classList.remove("hidden");
+questDone?.classList.add("hidden");
+renderDots();
+showQuestion();
+console.log("q1", await sha256Hex(lettersOnly("Cuddles")));
+window.hashMe = async (s) => console.log(await sha256Hex(lettersOnly(s)));
+hashMe("Cuddles")
+hashMe("Griffith Observatory")
+hashMe("Griffiths Observatory")
+hashMe("Perfect")
+hashMe("LAX Airport")
+hashMe("Red Roses")
+
+questEnvelope?.classList.add("pulse");
+setTimeout(() => questEnvelope?.classList.remove("pulse"), 520);
