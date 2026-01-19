@@ -253,6 +253,9 @@ unlockBtn?.addEventListener("click", async () => {
     setUnlocked(true);
     if (successMsg) successMsg.style.display = "block";
 
+    // NEW: trigger wax crack + hearts burst + letter slide-out
+    if (typeof unlockEnvelope === "function") unlockEnvelope();
+
     // cinematic reveal
     letterWrap?.classList.add("unlocked");
     envelope?.classList.add("zoom");
