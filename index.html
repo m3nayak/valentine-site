@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Envelope</title>
+  <title>Love Envelope</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -14,19 +14,32 @@
 
   <!-- ENVELOPE STAGE -->
   <div class="stage">
-    <div class="envelope" id="envelope">
-      <div class="env-back"></div>
-      <div class="env-flap"></div>
-      <div class="env-front"></div>
+    <div class="envelope" aria-label="Envelope">
 
-      <!-- WAX SEAL -->
-      <div class="wax-seal">
-        <div class="wax-heart">❤</div>
+      <!-- Back/base -->
+      <div class="env-base"></div>
+
+      <!-- Side triangles (gives that folded look) -->
+      <div class="env-left"></div>
+      <div class="env-right"></div>
+
+      <!-- Bottom fold -->
+      <div class="env-bottom"></div>
+
+      <!-- Top flap (closed) -->
+      <div class="env-flap"></div>
+
+      <!-- Airmail border -->
+      <div class="env-border" aria-hidden="true"></div>
+
+      <!-- Heart wax seal -->
+      <div class="wax" aria-hidden="true">
+        <span class="wax-text">LOVE</span>
       </div>
+
     </div>
   </div>
 
   <script src="background.js"></script>
-  <script src="envelope.js"></script>
 </body>
 </html>
