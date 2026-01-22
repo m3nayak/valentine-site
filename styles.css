@@ -5,7 +5,9 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #fde6c8; /* warm vintage tone behind your hearts */
+
+  /* ✅ back to your original blush vibe */
+  background: #fff0f4;
 }
 
 /* =========================
@@ -37,144 +39,181 @@ html, body {
 }
 
 /* =========================
-   ENVELOPE (CLOSED)
+   ENVELOPE WRAPPER
 ========================= */
 .envelope {
   position: relative;
-  width: 460px;
-  height: 300px;
-  filter: drop-shadow(0 40px 80px rgba(0,0,0,0.35));
+  width: 520px;
+  height: 340px;
+  filter: drop-shadow(0 40px 80px rgba(0,0,0,0.28));
 }
 
-/* Base */
+/* =========================
+   AIRMAIL BORDER FRAME
+   ✅ stripes are ONLY in the frame
+========================= */
+.airmail-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 14px;
+
+  /* diagonal stripes */
+  background: repeating-linear-gradient(
+    45deg,
+    #d62828 0 12px,
+    #ffffff 12px 24px,
+    #1d3557 24px 36px,
+    #ffffff 36px 48px
+  );
+}
+
+/* inner paper area */
+.paper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+
+  /* warm kraft paper */
+  background: #e6b36a;
+
+  /* slight inner shadow like paper depth */
+  box-shadow:
+    inset 0 0 0 2px rgba(120, 80, 30, 0.25),
+    inset 0 12px 22px rgba(255,255,255,0.22);
+  overflow: hidden;
+}
+
+/* =========================
+   ENVELOPE FOLDS (CLOSED)
+========================= */
 .env-base {
   position: absolute;
   inset: 0;
   background: #e6b36a;
-  border-radius: 12px;
   z-index: 1;
 }
 
-/* Left fold */
+/* left fold triangle */
 .env-left {
   position: absolute;
   inset: 0;
   background: #dba65f;
-  clip-path: polygon(0 0, 52% 52%, 0 100%);
-  border-radius: 12px;
+  clip-path: polygon(0 6%, 54% 55%, 0 98%);
   z-index: 2;
-  opacity: 0.95;
+  opacity: 0.98;
 }
 
-/* Right fold */
+/* right fold triangle */
 .env-right {
   position: absolute;
   inset: 0;
   background: #d19a54;
-  clip-path: polygon(100% 0, 48% 52%, 100% 100%);
-  border-radius: 12px;
+  clip-path: polygon(100% 6%, 46% 55%, 100% 98%);
   z-index: 2;
-  opacity: 0.95;
+  opacity: 0.98;
 }
 
-/* Bottom fold */
+/* bottom fold */
 .env-bottom {
   position: absolute;
   inset: 0;
   background: #e0aa63;
-  clip-path: polygon(0 100%, 50% 55%, 100% 100%);
-  border-radius: 12px;
+  clip-path: polygon(0 100%, 50% 58%, 100% 100%);
   z-index: 3;
 }
 
-/* Top flap (closed) */
+/* top flap closed */
 .env-flap {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 175px;
+  height: 62%;
   background: #e2ad64;
-  clip-path: polygon(0 0, 50% 78%, 100% 0);
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  clip-path: polygon(0 0, 50% 82%, 100% 0);
   z-index: 4;
-  opacity: 0.98;
+  opacity: 0.99;
+
+  /* subtle highlight */
+  box-shadow: inset 0 10px 18px rgba(255,255,255,0.18);
 }
 
 /* =========================
-   AIRMAIL BORDER
-========================= */
-.env-border {
-  position: absolute;
-  inset: 10px;
-  border-radius: 9px;
-  border: 5px solid transparent;
-  background:
-    linear-gradient(#0000, #0000) padding-box,
-    repeating-linear-gradient(
-      45deg,
-      #d62828 0 10px,
-      #fff 10px 20px,
-      #1d3557 20px 30px,
-      #fff 30px 40px
-    ) border-box;
-  z-index: 10;
-  pointer-events: none;
-  opacity: 0.95;
-}
-
-/* =========================
-   HEART WAX SEAL
+   HEART WAX SEAL (PURE CSS)
+   ✅ works everywhere (no clip-path path)
 ========================= */
 .wax {
   position: absolute;
-  top: 60%;
   left: 50%;
+  top: 60%;
   transform: translate(-50%, -50%) rotate(-4deg);
-  width: 92px;
-  height: 84px;
-  background: radial-gradient(circle at 30% 30%, #ff7b7b, #b3122e);
-  /* Heart shape */
-  clip-path: path(
-    "M46 82
-     C12 55, 2 38, 12 22
-     C23 6, 42 16, 46 28
-     C50 16, 69 6, 80 22
-     C90 38, 80 55, 46 82"
-  );
-  box-shadow:
-    inset -7px -9px 12px rgba(0,0,0,0.35),
-    inset 5px 5px 7px rgba(255,255,255,0.30),
-    0 18px 32px rgba(0,0,0,0.45);
-  z-index: 20;
+  width: 110px;
+  height: 100px;
+  z-index: 10;
   display: grid;
   place-items: center;
 }
 
-/* Imprint text */
-.wax-text {
+/* the wax “blob” base behind the heart */
+.wax::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 26px;
+  background: radial-gradient(circle at 30% 30%, #ff7b7b, #b3122e);
+  box-shadow:
+    inset -7px -9px 14px rgba(0,0,0,0.35),
+    inset 5px 5px 10px rgba(255,255,255,0.22),
+    0 18px 32px rgba(0,0,0,0.40);
+}
+
+/* actual HEART shape using 2 circles + square */
+.wax-heart {
+  position: relative;
+  width: 62px;
+  height: 54px;
+  transform: translateY(2px) rotate(-45deg);
+  z-index: 2;
+  background: rgba(255,255,255,0.20); /* imprint sheen */
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,0.10);
+}
+
+.wax-heart::before,
+.wax-heart::after {
+  content: "";
+  position: absolute;
+  width: 62px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.20);
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,0.10);
+}
+
+.wax-heart::before { top: -27px; left: 0; }
+.wax-heart::after  { top: 0; left: 27px; }
+
+/* LOVE imprint text */
+.wax-imprint {
+  position: absolute;
+  bottom: 16px;
+  z-index: 3;
   font-family: Georgia, serif;
-  font-size: 14px;
+  font-weight: 700;
   letter-spacing: 1px;
-  color: rgba(255,255,255,0.88);
-  transform: translateY(6px);
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
   text-shadow: 0 1px 2px rgba(0,0,0,0.35);
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
-@media (max-width: 700px) {
-  .envelope {
-    width: 340px;
-    height: 230px;
-  }
-  .env-flap {
-    height: 135px;
-  }
-  .wax {
-    width: 78px;
-    height: 72px;
-  }
+@media (max-width: 720px) {
+  .envelope { width: 360px; height: 240px; }
+  .airmail-frame { padding: 10px; border-radius: 14px; }
+  .paper { border-radius: 10px; }
+  .wax { transform: translate(-50%, -50%) rotate(-4deg) scale(0.85); }
 }
