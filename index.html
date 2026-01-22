@@ -3,20 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Responsive Hearts Background</title>
+  <title>Envelope</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Background layers -->
-  <canvas id="heartsCanvas"></canvas>
-  <div id="kissLayer" aria-hidden="true"></div>
 
-  <!-- Optional demo content -->
-  <div class="demoContent">
-    <h1>✨ Responsive background ✨</h1>
-    <p>Resize the window / rotate your phone.</p>
+  <!-- BACKGROUND -->
+  <canvas id="heartsCanvas"></canvas>
+  <div id="kissLayer"></div>
+
+  <!-- CENTER STAGE -->
+  <div class="stage">
+    <div class="envelope" id="envelope">
+      <div class="env-back"></div>
+
+      <div class="env-flap"></div>
+
+      <div class="env-front"></div>
+
+      <!-- WAX SEAL -->
+      <div class="wax-seal">
+        <div class="wax-heart">❤</div>
+      </div>
+    </div>
   </div>
 
   <script src="background.js"></script>
+  <script src="envelope.js"></script>
 </body>
 </html>
