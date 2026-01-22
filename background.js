@@ -1,8 +1,8 @@
 /* ============================================================
    Responsive romantic background (NO dead zones on resize)
-   - Hearts canvas fills immediately on resize/maximise
-   - Kiss popups reseed instantly
-   - Safe on mobile, tiny windows, large screens
+   - Hearts: immediately seed into newly revealed area on resize/maximize
+   - Kisses: instantly reseed
+   - Works on mobile rotation, tiny windows, maximize/minimize
 ============================================================ */
 
 const prefersReducedMotion =
@@ -18,7 +18,7 @@ function rand(a, b) {
 }
 
 /* ============================================================
-   HEARTS CANVAS
+   HEARTS CANVAS (instant fill on resize)
 ============================================================ */
 (function heartsBackground() {
   const canvas = document.getElementById("heartsCanvas");
@@ -26,6 +26,7 @@ function rand(a, b) {
   const ctx = canvas.getContext("2d");
 
   let W = 0, H = 0, dpr = 1;
+  let prevW = 0, prevH = 0;
   let hearts = [];
   let rafId = null;
 
@@ -38,17 +39,17 @@ function rand(a, b) {
     "rgba(220, 20, 60, 0.92)",
   ];
 
-  function desiredCount() {
-    const area = W * H;
+  function desiredCount(w, h) {
+    const area = w * h;
     const base = 200; // tuned for 1920x1080
     const scale = area / (1920 * 1080);
-    return clamp(Math.round(base * scale), 80, 280);
+    return clamp(Math.round(base * scale), 80, 300);
   }
 
-  function createHeart(x = rand(0, W), y = rand(0, H)) {
+  function createHeart(x, y) {
     return {
-      x,
-      y,
+      x: x ?? rand(0, W),
+      y: y ?? rand(0, H),
       s: rand(0.7, 1.6),
       v: rand(0.35, 1.05),
       vx: rand(-0.25, 0.25),
@@ -61,17 +62,10 @@ function rand(a, b) {
     };
   }
 
-  function rebuildHeartsInstantly() {
-    if (prefersReducedMotion) {
-      hearts = [];
-      return;
-    }
+  function setCanvasSize() {
+    prevW = W;
+    prevH = H;
 
-    const count = desiredCount();
-    hearts = Array.from({ length: count }, () => createHeart());
-  }
-
-  function resizeCanvas() {
     W = window.innerWidth;
     H = window.innerHeight;
     dpr = window.devicePixelRatio || 1;
@@ -81,9 +75,58 @@ function rand(a, b) {
     canvas.style.width = W + "px";
     canvas.style.height = H + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
 
-    // 🔥 KEY FIX: immediately repopulate whole screen
-    rebuildHeartsInstantly();
+  function seedNewAreaImmediately() {
+    if (prefersReducedMotion) {
+      hearts = [];
+      return;
+    }
+
+    const target = desiredCount(W, H);
+
+    // If first run or huge jump, just rebuild fully.
+    if (hearts.length === 0 || prevW === 0 || prevH === 0) {
+      hearts = Array.from({ length: target }, () => createHeart());
+      return;
+    }
+
+    // Add hearts specifically in newly revealed areas (right side / bottom)
+    const added = [];
+
+    // New right-side strip (when width increases)
+    if (W > prevW) {
+      const stripW = W - prevW;
+      const n = clamp(Math.round((stripW * H) / (W * H) * target), 8, 90);
+      for (let i = 0; i < n; i++) {
+        added.push(createHeart(rand(prevW, W), rand(0, H)));
+      }
+    }
+
+    // New bottom strip (when height increases)
+    if (H > prevH) {
+      const stripH = H - prevH;
+      const n = clamp(Math.round((prevW * stripH) / (W * H) * target), 8, 90);
+      for (let i = 0; i < n; i++) {
+        added.push(createHeart(rand(0, Math.min(prevW, W)), rand(prevH, H)));
+      }
+    }
+
+    // If it shrank, wrap hearts that are out of bounds back into bounds
+    for (const h of hearts) {
+      if (h.x > W) h.x = rand(0, W);
+      if (h.y > H) h.y = rand(0, H);
+    }
+
+    hearts.push(...added);
+
+    // Ensure count matches target (top up or trim)
+    if (hearts.length < target) {
+      const need = target - hearts.length;
+      for (let i = 0; i < need; i++) hearts.push(createHeart());
+    } else if (hearts.length > target) {
+      hearts.length = target;
+    }
   }
 
   function drawHeart(h) {
@@ -104,7 +147,13 @@ function rand(a, b) {
     ctx.strokeStyle = "rgba(255,255,255,0.12)";
     ctx.lineWidth = 1;
     ctx.stroke();
+
     ctx.restore();
+  }
+
+  function renderOnce() {
+    ctx.clearRect(0, 0, W, H);
+    for (const h of hearts) drawHeart(h);
   }
 
   function tick() {
@@ -131,6 +180,102 @@ function rand(a, b) {
     rafId = requestAnimationFrame(tick);
   }
 
-  let resizeTimer = null;
-  function onResize() {
-    clearT
+  // Resize handling: run immediately (rAF-throttled), no “waiting”
+  let resizeQueued = false;
+  function requestResize() {
+    if (resizeQueued) return;
+    resizeQueued = true;
+
+    requestAnimationFrame(() => {
+      resizeQueued = false;
+      setCanvasSize();
+      seedNewAreaImmediately();
+      renderOnce(); // immediate visual fill (prevents blank zones)
+    });
+  }
+
+  window.addEventListener("resize", requestResize, { passive: true });
+  window.addEventListener("orientationchange", requestResize, { passive: true });
+
+  // init
+  setCanvasSize();
+  seedNewAreaImmediately();
+  renderOnce();
+  tick();
+
+  // Pause when tab hidden (battery friendly)
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden && rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    } else if (!rafId) {
+      tick();
+    }
+  });
+})();
+
+/* ============================================================
+   KISS POPUPS (instant reseed on resize)
+============================================================ */
+(function kissPopups() {
+  const layer = document.getElementById("kissLayer");
+  if (!layer || prefersReducedMotion) return;
+
+  const KISS_IMG_URLS = ["kiss.png"]; // put kiss.png next to index.html
+
+  function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function tuning() {
+    const area = window.innerWidth * window.innerHeight;
+    return {
+      max: clamp(Math.round(area / (320 * 480) * 6), 4, 14),
+      minSize: clamp(Math.round(Math.min(window.innerWidth, window.innerHeight) * 0.12), 48, 90),
+      maxSize: clamp(Math.round(Math.min(window.innerWidth, window.innerHeight) * 0.24), 90, 160),
+      minMs: 900,
+      maxMs: 1800,
+    };
+  }
+
+  function spawn(force = false) {
+    const t = tuning();
+    if (!force && layer.childElementCount >= t.max) return;
+
+    const el = document.createElement("div");
+    el.className = "kissPop";
+
+    const size = rand(t.minSize, t.maxSize);
+    el.style.left = rand(20, window.innerWidth - size - 20) + "px";
+    el.style.top = rand(20, window.innerHeight - size - 20) + "px";
+
+    el.style.setProperty("--size", `${size}px`);
+    el.style.setProperty("--rot", `${rand(-18, 18)}deg`);
+    el.style.setProperty("--dur", `${rand(5200, 9000)}ms`);
+    el.style.setProperty("--op", rand(0.12, 0.22).toFixed(2));
+    el.style.setProperty("--img", `url("${pick(KISS_IMG_URLS)}")`);
+
+    layer.appendChild(el);
+    setTimeout(() => el.remove(), 9500);
+  }
+
+  function reseedImmediately() {
+    layer.innerHTML = "";
+    const { max } = tuning();
+    for (let i = 0; i < Math.min(4, max); i++) spawn(true);
+  }
+
+  function loop() {
+    spawn();
+    const { minMs, maxMs } = tuning();
+    setTimeout(loop, rand(minMs, maxMs));
+  }
+
+  window.addEventListener("resize", () => {
+    clearTimeout(window.__kissResize);
+    window.__kissResize = setTimeout(reseedImmediately, 120);
+  }, { passive: true });
+
+  reseedImmediately();
+  loop();
+})();
