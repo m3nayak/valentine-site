@@ -8,35 +8,31 @@
 </head>
 <body>
 
-  <!-- BACKGROUND -->
+  <!-- BACKGROUND (your existing animated hearts + kisses use these) -->
   <canvas id="heartsCanvas"></canvas>
   <div id="kissLayer"></div>
 
-  <!-- ENVELOPE STAGE -->
+  <!-- ENVELOPE -->
   <div class="stage">
     <div class="envelope" aria-label="Envelope">
+      <div class="airmail-frame">
+        <div class="paper">
 
-      <!-- Back/base -->
-      <div class="env-base"></div>
+          <!-- folds -->
+          <div class="env-base"></div>
+          <div class="env-left"></div>
+          <div class="env-right"></div>
+          <div class="env-bottom"></div>
+          <div class="env-flap"></div>
 
-      <!-- Side triangles (gives that folded look) -->
-      <div class="env-left"></div>
-      <div class="env-right"></div>
+          <!-- heart wax seal -->
+          <div class="wax" aria-hidden="true">
+            <div class="wax-heart" aria-hidden="true"></div>
+            <div class="wax-imprint">LOVE</div>
+          </div>
 
-      <!-- Bottom fold -->
-      <div class="env-bottom"></div>
-
-      <!-- Top flap (closed) -->
-      <div class="env-flap"></div>
-
-      <!-- Airmail border -->
-      <div class="env-border" aria-hidden="true"></div>
-
-      <!-- Heart wax seal -->
-      <div class="wax" aria-hidden="true">
-        <span class="wax-text">LOVE</span>
+        </div>
       </div>
-
     </div>
   </div>
 
