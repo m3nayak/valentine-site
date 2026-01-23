@@ -8,31 +8,25 @@
 </head>
 <body>
 
-  <!-- BACKGROUND (your existing animated hearts + kisses use these) -->
+  <!-- BACKGROUND (your background.js uses these) -->
   <canvas id="heartsCanvas"></canvas>
-  <div id="kissLayer"></div>
+  <div id="kissLayer" aria-hidden="true"></div>
 
-  <!-- ENVELOPE -->
+  <!-- CENTER ENVELOPE -->
   <div class="stage">
-    <div class="envelope" aria-label="Envelope">
-      <div class="airmail-frame">
-        <div class="paper">
+    <div class="cartoonEnvelope" aria-label="Envelope">
+      <div class="envPaper"></div>
 
-          <!-- folds -->
-          <div class="env-base"></div>
-          <div class="env-left"></div>
-          <div class="env-right"></div>
-          <div class="env-bottom"></div>
-          <div class="env-flap"></div>
+      <!-- folds -->
+      <div class="envFold envFoldLeft"></div>
+      <div class="envFold envFoldRight"></div>
+      <div class="envFold envFoldBottom"></div>
+      <div class="envFold envFoldTop"></div>
 
-          <!-- heart wax seal -->
-          <div class="wax">
-            <div class="wax-heart"></div>
-            <div class="wax-imprint">LOVE</div>
-          </div>
-
-
-        </div>
+      <!-- wax seal -->
+      <div class="waxSeal" aria-hidden="true">
+        <div class="waxInner" aria-hidden="true"></div>
+        <div class="waxHeart" aria-hidden="true"></div>
       </div>
     </div>
   </div>
