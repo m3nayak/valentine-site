@@ -7,30 +7,14 @@ html, body {
   overflow: hidden;
 
   /* soft romantic pink */
-  background: linear-gradient(
-    180deg,
-    #fff0f6 0%,
-    #ffe3ef 40%,
-    #ffd6e8 100%
-  );
+  background: linear-gradient(180deg, #fff0f6 0%, #ffe3ef 40%, #ffd6e8 100%);
 }
 
 /* =========================
    BACKGROUND LAYERS
 ========================= */
-#heartsCanvas {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-#kissLayer {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-}
+#heartsCanvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+#kissLayer    { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 
 /* =========================
    STAGE
@@ -50,7 +34,7 @@ html, body {
   position: relative;
   width: 520px;
   height: 340px;
-  filter: drop-shadow(0 40px 80px rgba(0,0,0,0.28));
+  filter: drop-shadow(0 40px 80px rgba(0,0,0,0.26));
 }
 
 /* =========================
@@ -59,7 +43,7 @@ html, body {
 .airmail-frame {
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 14px;
   background: repeating-linear-gradient(
     45deg,
@@ -70,53 +54,57 @@ html, body {
   );
 }
 
-/* =========================
-   PAPER
-========================= */
 .paper {
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 12px;
-  background: #e6b36a;
-  box-shadow:
-    inset 0 0 0 2px rgba(120, 80, 30, 0.25),
-    inset 0 12px 22px rgba(255,255,255,0.22);
+  border-radius: 14px;
   overflow: hidden;
+
+  /* warm kraft */
+  background: #e5b06a;
+
+  box-shadow:
+    inset 0 0 0 2px rgba(120, 80, 30, 0.22),
+    inset 0 18px 28px rgba(255,255,255,0.18);
 }
 
 /* =========================
-   ENVELOPE FOLDS
+   ENVELOPE FOLDS (SOFTER)
 ========================= */
 .env-base {
   position: absolute;
   inset: 0;
-  background: #e6b36a;
+  background: linear-gradient(180deg, #e7b36c, #e1aa62);
   z-index: 1;
 }
 
+/* use softer gradients instead of flat triangles */
 .env-left {
   position: absolute;
   inset: 0;
-  background: #dba65f;
-  clip-path: polygon(0 6%, 54% 55%, 0 98%);
+  clip-path: polygon(0 4%, 54% 55%, 0 98%);
+  background: linear-gradient(135deg, rgba(0,0,0,0.08), rgba(255,255,255,0.06));
   z-index: 2;
+  opacity: 0.9;
 }
 
 .env-right {
   position: absolute;
   inset: 0;
-  background: #d19a54;
-  clip-path: polygon(100% 6%, 46% 55%, 100% 98%);
+  clip-path: polygon(100% 4%, 46% 55%, 100% 98%);
+  background: linear-gradient(225deg, rgba(0,0,0,0.10), rgba(255,255,255,0.05));
   z-index: 2;
+  opacity: 0.9;
 }
 
 .env-bottom {
   position: absolute;
   inset: 0;
-  background: #e0aa63;
   clip-path: polygon(0 100%, 50% 58%, 100% 100%);
+  background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(0,0,0,0.10));
   z-index: 3;
+  opacity: 0.9;
 }
 
 .env-flap {
@@ -125,77 +113,105 @@ html, body {
   left: 0;
   right: 0;
   height: 62%;
-  background: #e2ad64;
   clip-path: polygon(0 0, 50% 82%, 100% 0);
   z-index: 4;
-  box-shadow: inset 0 10px 18px rgba(255,255,255,0.18);
+
+  background: linear-gradient(180deg, #e7b36c 0%, #dba35a 100%);
+  box-shadow:
+    inset 0 14px 22px rgba(255,255,255,0.14),
+    inset 0 -10px 16px rgba(0,0,0,0.08);
 }
 
 /* =========================
-   WAX SEAL (REALISTIC ROUND)
+   WAX SEAL (MELTED + PRESSED HEART)
 ========================= */
 .wax {
   position: absolute;
   left: 50%;
   top: 60%;
-  transform: translate(-50%, -50%);
-  width: 110px;
-  height: 110px;
+  transform: translate(-50%, -50%) rotate(-6deg);
+  width: 120px;
+  height: 120px;
   z-index: 20;
   pointer-events: none;
 }
 
-/* Wax blob */
+/* soft shadow onto envelope */
+.wax-shadow {
+  display:none;
+}
+
+/* Melted outer blob: use pseudo with wavy edge via layered radial gradients */
 .wax::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -8px;
   border-radius: 50%;
+
+  /* Irregular rim bumps */
   background:
-    radial-gradient(circle at 30% 28%, #ff6b6b 0%, #d1001c 35%, #9e0015 75%);
+    radial-gradient(circle at 22% 18%, rgba(255,255,255,0.18) 0 18px, transparent 19px),
+    radial-gradient(circle at 78% 22%, rgba(255,255,255,0.14) 0 16px, transparent 17px),
+    radial-gradient(circle at 18% 76%, rgba(0,0,0,0.10) 0 18px, transparent 19px),
+    radial-gradient(circle at 82% 78%, rgba(0,0,0,0.12) 0 16px, transparent 17px),
+    radial-gradient(circle at 50% 50%, #ff4b57 0%, #c3001a 42%, #8d0014 78%);
   box-shadow:
-    inset -8px -10px 14px rgba(0,0,0,0.35),
-    inset 6px 6px 10px rgba(255,255,255,0.25),
-    0 16px 30px rgba(0,0,0,0.45);
+    0 18px 28px rgba(0,0,0,0.38);
+  filter: saturate(1.05);
 }
 
-/* Irregular melted edge */
+/* Inner pressed disk */
 .wax::after {
   content: "";
   position: absolute;
-  inset: -6px;
+  inset: 10px;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 40% 40%, rgba(255,255,255,0.25), transparent 55%);
-  filter: blur(6px);
-  opacity: 0.7;
+    radial-gradient(circle at 30% 28%, rgba(255,255,255,0.30), transparent 42%),
+    radial-gradient(circle at 70% 75%, rgba(0,0,0,0.22), transparent 50%),
+    radial-gradient(circle at 50% 50%, #e00020 0%, #a80018 65%, #7b0012 100%);
+  box-shadow:
+    inset -10px -12px 18px rgba(0,0,0,0.30),
+    inset 8px 8px 14px rgba(255,255,255,0.10);
 }
 
-/* Embossed heart (pressed into wax) */
+/* The pressed heart itself (clear + embossed) */
 .wax-heart {
   position: absolute;
-  inset: 22px;
-  transform: rotate(-45deg);
-  background: rgba(0,0,0,0.12);
-  border-radius: 10px;
+  left: 50%;
+  top: 50%;
+  width: 54px;
+  height: 54px;
+  transform: translate(-50%, -52%) rotate(-45deg);
+  z-index: 2;
+
+  background: rgba(0,0,0,0.16);
+  border-radius: 12px;
   box-shadow:
-    inset 2px 2px 4px rgba(255,255,255,0.15),
-    inset -3px -3px 6px rgba(0,0,0,0.35);
+    inset 3px 3px 6px rgba(255,255,255,0.10),
+    inset -6px -6px 10px rgba(0,0,0,0.35);
 }
 
-/* Heart lobes */
 .wax-heart::before,
 .wax-heart::after {
   content: "";
   position: absolute;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.12);
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
+  background: rgba(0,0,0,0.16);
+  box-shadow:
+    inset 3px 3px 6px rgba(255,255,255,0.10),
+    inset -6px -6px 10px rgba(0,0,0,0.35);
 }
 
-.wax-heart::before { top: -50%; left: 0; }
-.wax-heart::after  { left: 50%; top: 0; }
+.wax-heart::before { top: -27px; left: 0; }
+.wax-heart::after  { top: 0; left: 27px; }
+
+/* Optional subtle highlight stroke on the heart */
+.wax-heart-highlight {
+  display:none;
+}
 
 /* =========================
    RESPONSIVE
@@ -204,5 +220,5 @@ html, body {
   .envelope { width: 360px; height: 240px; }
   .airmail-frame { padding: 10px; border-radius: 14px; }
   .paper { border-radius: 10px; }
-  .wax { transform: translate(-50%, -50%) scale(0.8); }
+  .wax { transform: translate(-50%, -50%) rotate(-6deg) scale(0.82); }
 }
