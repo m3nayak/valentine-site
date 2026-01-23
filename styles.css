@@ -6,219 +6,215 @@ html, body {
   height: 100%;
   overflow: hidden;
 
-  /* soft romantic pink */
+  /* Pink like before */
   background: linear-gradient(180deg, #fff0f6 0%, #ffe3ef 40%, #ffd6e8 100%);
 }
 
 /* =========================
    BACKGROUND LAYERS
 ========================= */
-#heartsCanvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-#kissLayer    { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+#heartsCanvas{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+#kissLayer{
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ✅ KISSES WERE GONE BECAUSE THIS CSS WAS MISSING */
+.kissPop{
+  position:absolute;
+  width: var(--size);
+  height: var(--size);
+  opacity: var(--op);
+  transform: rotate(var(--rot));
+  background-image: var(--img);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  animation: kissFloat var(--dur) ease-in-out forwards;
+  filter: blur(0.2px);
+  will-change: opacity, transform;
+}
+
+@keyframes kissFloat{
+  0%   { transform: rotate(var(--rot)) scale(0.96); opacity:0; }
+  12%  { opacity: var(--op); }
+  85%  { opacity: var(--op); }
+  100% { transform: rotate(var(--rot)) scale(1.03); opacity:0; }
+}
 
 /* =========================
    STAGE
 ========================= */
-.stage {
+.stage{
   position: fixed;
   inset: 0;
   z-index: 10;
   display: grid;
   place-items: center;
+  padding: 18px;
 }
 
 /* =========================
-   ENVELOPE WRAPPER
+   CARTOON ENVELOPE (LIKE YOUR REF)
 ========================= */
-.envelope {
+.cartoonEnvelope{
   position: relative;
-  width: 520px;
-  height: 340px;
-  filter: drop-shadow(0 40px 80px rgba(0,0,0,0.26));
+  width: min(640px, 92vw);
+  aspect-ratio: 16 / 10;
+  border-radius: 22px;
+
+  /* soft shadow like sticker */
+  filter: drop-shadow(0 34px 60px rgba(0,0,0,0.22));
 }
 
-/* =========================
-   AIRMAIL BORDER FRAME
-========================= */
-.airmail-frame {
+/* paper base with subtle texture */
+.envPaper{
   position: absolute;
   inset: 0;
-  border-radius: 18px;
-  padding: 14px;
-  background: repeating-linear-gradient(
-    45deg,
-    #d62828 0 12px,
-    #ffffff 12px 24px,
-    #1d3557 24px 36px,
-    #ffffff 36px 48px
-  );
-}
+  border-radius: 22px;
 
-.paper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 14px;
-  overflow: hidden;
-
-  /* warm kraft */
-  background: #e5b06a;
+  background:
+    /* tiny speckles */
+    radial-gradient(circle at 18% 22%, rgba(140,90,30,0.12) 0 1px, transparent 2px),
+    radial-gradient(circle at 66% 34%, rgba(140,90,30,0.10) 0 1px, transparent 2px),
+    radial-gradient(circle at 42% 70%, rgba(140,90,30,0.10) 0 1px, transparent 2px),
+    radial-gradient(circle at 80% 72%, rgba(140,90,30,0.10) 0 1px, transparent 2px),
+    linear-gradient(180deg, #f4d7a8 0%, #efcc98 100%);
 
   box-shadow:
-    inset 0 0 0 2px rgba(120, 80, 30, 0.22),
-    inset 0 18px 28px rgba(255,255,255,0.18);
+    inset 0 0 0 2px rgba(150, 100, 40, 0.22),
+    inset 0 18px 26px rgba(255,255,255,0.18);
 }
 
-/* =========================
-   ENVELOPE FOLDS (SOFTER)
-========================= */
-.env-base {
+/* folds */
+.envFold{
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #e7b36c, #e1aa62);
-  z-index: 1;
+  border-radius: 22px;
 }
 
-/* use softer gradients instead of flat triangles */
-.env-left {
-  position: absolute;
-  inset: 0;
-  clip-path: polygon(0 4%, 54% 55%, 0 98%);
-  background: linear-gradient(135deg, rgba(0,0,0,0.08), rgba(255,255,255,0.06));
-  z-index: 2;
+.envFoldLeft{
+  clip-path: polygon(0 8%, 52% 56%, 0 96%);
+  background: linear-gradient(135deg, rgba(0,0,0,0.10), rgba(255,255,255,0.08));
   opacity: 0.9;
 }
 
-.env-right {
-  position: absolute;
-  inset: 0;
-  clip-path: polygon(100% 4%, 46% 55%, 100% 98%);
-  background: linear-gradient(225deg, rgba(0,0,0,0.10), rgba(255,255,255,0.05));
-  z-index: 2;
+.envFoldRight{
+  clip-path: polygon(100% 8%, 48% 56%, 100% 96%);
+  background: linear-gradient(225deg, rgba(0,0,0,0.12), rgba(255,255,255,0.06));
   opacity: 0.9;
 }
 
-.env-bottom {
-  position: absolute;
-  inset: 0;
-  clip-path: polygon(0 100%, 50% 58%, 100% 100%);
+.envFoldBottom{
+  clip-path: polygon(0 100%, 50% 60%, 100% 100%);
   background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(0,0,0,0.10));
-  z-index: 3;
-  opacity: 0.9;
+  opacity: 0.92;
 }
 
-.env-flap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 62%;
-  clip-path: polygon(0 0, 50% 82%, 100% 0);
-  z-index: 4;
-
-  background: linear-gradient(180deg, #e7b36c 0%, #dba35a 100%);
-  box-shadow:
-    inset 0 14px 22px rgba(255,255,255,0.14),
-    inset 0 -10px 16px rgba(0,0,0,0.08);
+.envFoldTop{
+  clip-path: polygon(0 0, 50% 78%, 100% 0);
+  background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(0,0,0,0.06));
+  opacity: 0.55; /* keeps it “closed” but not too harsh */
 }
 
 /* =========================
-   WAX SEAL (MELTED + PRESSED HEART)
+   WAX SEAL (CARTOON SCALLOPED + EMBOSSED HEART)
 ========================= */
-.wax {
+.waxSeal{
   position: absolute;
-  left: 50%;
-  top: 60%;
-  transform: translate(-50%, -50%) rotate(-6deg);
-  width: 120px;
-  height: 120px;
+  left: 42%;
+  top: 56%;
+  transform: translate(-50%, -50%) rotate(-8deg);
+  width: min(140px, 22vw);
+  aspect-ratio: 1 / 1;
   z-index: 20;
-  pointer-events: none;
 }
 
-/* soft shadow onto envelope */
-.wax-shadow {
-  display:none;
-}
-
-/* Melted outer blob: use pseudo with wavy edge via layered radial gradients */
-.wax::before {
-  content: "";
-  position: absolute;
-  inset: -8px;
+/* scalloped wax edge */
+.waxSeal::before{
+  content:"";
+  position:absolute;
+  inset: 0;
   border-radius: 50%;
 
-  /* Irregular rim bumps */
+  /* scallops via repeating “bumps” */
   background:
-    radial-gradient(circle at 22% 18%, rgba(255,255,255,0.18) 0 18px, transparent 19px),
-    radial-gradient(circle at 78% 22%, rgba(255,255,255,0.14) 0 16px, transparent 17px),
-    radial-gradient(circle at 18% 76%, rgba(0,0,0,0.10) 0 18px, transparent 19px),
-    radial-gradient(circle at 82% 78%, rgba(0,0,0,0.12) 0 16px, transparent 17px),
-    radial-gradient(circle at 50% 50%, #ff4b57 0%, #c3001a 42%, #8d0014 78%);
+    radial-gradient(circle at 50% 50%, #ff4b5a 0%, #cc001e 55%, #930016 100%);
+
   box-shadow:
-    0 18px 28px rgba(0,0,0,0.38);
-  filter: saturate(1.05);
+    0 18px 30px rgba(0,0,0,0.30),
+    inset -10px -12px 18px rgba(0,0,0,0.22),
+    inset 9px 9px 14px rgba(255,255,255,0.22);
+
+  /* fake scalloped rim by overlaying small bumps */
+  -webkit-mask:
+    radial-gradient(circle at 50% 50%, #000 63%, transparent 64%) ,
+    repeating-radial-gradient(circle at 50% 50%, #000 0 7px, transparent 8px 14px);
+  -webkit-mask-composite: source-over;
+  mask:
+    radial-gradient(circle at 50% 50%, #000 63%, transparent 64%),
+    repeating-radial-gradient(circle at 50% 50%, #000 0 7px, transparent 8px 14px);
+  mask-composite: add;
 }
 
-/* Inner pressed disk */
-.wax::after {
-  content: "";
-  position: absolute;
-  inset: 10px;
+/* inner pressed disk */
+.waxInner{
+  position:absolute;
+  inset: 16%;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 30% 28%, rgba(255,255,255,0.30), transparent 42%),
-    radial-gradient(circle at 70% 75%, rgba(0,0,0,0.22), transparent 50%),
-    radial-gradient(circle at 50% 50%, #e00020 0%, #a80018 65%, #7b0012 100%);
+    radial-gradient(circle at 30% 25%, rgba(255,255,255,0.32), transparent 45%),
+    radial-gradient(circle at 70% 78%, rgba(0,0,0,0.22), transparent 50%),
+    radial-gradient(circle at 50% 50%, #ea0022 0%, #b00018 70%, #840013 100%);
   box-shadow:
-    inset -10px -12px 18px rgba(0,0,0,0.30),
-    inset 8px 8px 14px rgba(255,255,255,0.10);
+    inset -8px -10px 14px rgba(0,0,0,0.25),
+    inset 6px 6px 10px rgba(255,255,255,0.12);
 }
 
-/* The pressed heart itself (clear + embossed) */
-.wax-heart {
-  position: absolute;
+/* embossed heart (pressed) */
+.waxHeart{
+  position:absolute;
   left: 50%;
   top: 50%;
-  width: 54px;
-  height: 54px;
-  transform: translate(-50%, -52%) rotate(-45deg);
-  z-index: 2;
-
-  background: rgba(0,0,0,0.16);
+  width: 44%;
+  height: 40%;
+  transform: translate(-50%, -55%) rotate(-45deg);
   border-radius: 12px;
+  background: rgba(0,0,0,0.14);
   box-shadow:
-    inset 3px 3px 6px rgba(255,255,255,0.10),
-    inset -6px -6px 10px rgba(0,0,0,0.35);
+    inset 2px 2px 4px rgba(255,255,255,0.10),
+    inset -5px -5px 10px rgba(0,0,0,0.30);
 }
 
-.wax-heart::before,
-.wax-heart::after {
-  content: "";
-  position: absolute;
-  width: 54px;
-  height: 54px;
+.waxHeart::before,
+.waxHeart::after{
+  content:"";
+  position:absolute;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
-  background: rgba(0,0,0,0.16);
+  background: rgba(0,0,0,0.14);
   box-shadow:
-    inset 3px 3px 6px rgba(255,255,255,0.10),
-    inset -6px -6px 10px rgba(0,0,0,0.35);
+    inset 2px 2px 4px rgba(255,255,255,0.10),
+    inset -5px -5px 10px rgba(0,0,0,0.30);
 }
 
-.wax-heart::before { top: -27px; left: 0; }
-.wax-heart::after  { top: 0; left: 27px; }
-
-/* Optional subtle highlight stroke on the heart */
-.wax-heart-highlight {
-  display:none;
-}
+.waxHeart::before{ top: -50%; left: 0; }
+.waxHeart::after { top: 0; left: 50%; }
 
 /* =========================
-   RESPONSIVE
+   RESPONSIVE TWEAKS
 ========================= */
-@media (max-width: 720px) {
-  .envelope { width: 360px; height: 240px; }
-  .airmail-frame { padding: 10px; border-radius: 14px; }
-  .paper { border-radius: 10px; }
-  .wax { transform: translate(-50%, -50%) rotate(-6deg) scale(0.82); }
+@media (max-width: 520px){
+  .waxSeal{ left: 50%; }
 }
